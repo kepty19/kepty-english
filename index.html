@@ -8,7 +8,7 @@
 <script src="https://unpkg.com/lucide@latest"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
-body { font-family: 'Inter', -apple-system, sans-serif; -webkit-overflow-scrolling: touch; }
+body { font-family: 'Inter', -apple-system, sans-serif; -webkit-overflow-scrolling: touch; background-color: #f8fafc; }
 :root { 
     --kepty-orange: #CE4A22; --kepty-light-orange: #FFEDE8; --kepty-mid-orange: #FAC3B1; --kepty-green: #10b981; --kepty-light-green: #ecfdf5;
     --hl-blue: #bfdbfe; --hl-pink: #fbcfe8; --hl-green-soft: #bbf7d0; --hl-yellow: #fef08a; 
@@ -48,6 +48,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; -webkit-overflow-scrolli
 .flipped .flip-card-inner { transform: rotateY(180deg); }
 .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: 12px; padding: 12px 20px 12px 32px; display: flex; flex-direction: column; justify-content: center; text-align: left; }
 .flip-card-front { background: white; border: 1px solid #f1f5f9; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+/* 裏面：薄緑に細い枠線 */
 .flip-card-back { background: var(--kepty-light-green); border: 1px solid #d1fae5; transform: rotateY(180deg); }
 
 /* クイズ */
@@ -55,9 +56,8 @@ body { font-family: 'Inter', -apple-system, sans-serif; -webkit-overflow-scrolli
 .quiz-option-btn:active { transform: scale(0.98) translateY(2px); }
 .quiz-badge { position: absolute; top: 8px; right: 12px; font-size: 8px; font-weight: 900; text-transform: uppercase; padding: 2px 5px; border-radius: 4px; display: none; }
 
-/* フッター Indicator */
+/* フッター */
 .portal-footer { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #f1f5f9; display: flex; justify-content: flex-start; overflow-x: auto; padding: 12px 0; z-index: 100; box-shadow: 0 -5px 15px rgba(0,0,0,0.03); scrollbar-width: none; }
-.portal-footer::-webkit-scrollbar { display: none; }
 .footer-indicator { position: fixed; bottom: 22px; right: 0; z-index: 101; background: linear-gradient(to left, white 40%, transparent); color: var(--kepty-orange); width: 40px; height: 35px; display: flex; align-items: center; justify-content: center; animation: bounce-x 1.2s infinite; pointer-events: none; }
 @keyframes bounce-x { 0%, 100% { transform: translateX(0); opacity: 0.5; } 50% { transform: translateX(-5px); opacity: 1; } }
 
@@ -73,11 +73,12 @@ body { font-family: 'Inter', -apple-system, sans-serif; -webkit-overflow-scrolli
 .good-label { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: 900; font-size: 2.2rem; opacity: 0; pointer-events: none; transition: all 0.3s; z-index: 50; color: #16a34a; }
 .good-label.show { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
 
-/* マイクボタン */
+/* マイク */
 .record-btn { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1.5px solid var(--kepty-orange); color: var(--kepty-orange); cursor: pointer; transition: 0.2s; -webkit-tap-highlight-color: transparent; }
 .record-btn.recording { background-color: var(--kepty-orange) !important; color: white !important; animation: ph-pulse 1s infinite !important; }
 @keyframes ph-pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(206, 74, 34, 0.1); } 100% { transform: scale(1); } }
 
+/* Exam / Topic Talk マイク（グレー） */
 .exam-mic-btn { width: 58px; height: 58px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #e2e8f0; color: #94a3b8; background: #f8fafc; transition: 0.2s; cursor: pointer; }
 .exam-mic-btn:active { transform: scale(0.9); background: #f1f5f9; }
 
@@ -88,12 +89,12 @@ body { font-family: 'Inter', -apple-system, sans-serif; -webkit-overflow-scrolli
 .progress-dot { width: 10px; height: 10px; border-radius: 2px; border: 1.5px solid #e2e8f0; background: white; transition: 0.3s; }
 .progress-dot.filled { background: var(--kepty-orange); border-color: var(--kepty-orange); }
 
-/* ボタン沈み込みアニメーション */
+/* ボタン沈み込み：スマホ優先 */
 .nav-icon-btn:active, .next-btn-orange:active { transform: scale(0.92) translateY(2px) !important; }
 .next-btn-orange { background-color: var(--kepty-orange) !important; color: white !important; display: flex; align-items: center; justify-content: center; border-radius: 9999px; transition: transform 0.1s; cursor: pointer; }
 .restart-link { color: #94a3b8; font-size: 14px; font-weight: 700; border-bottom: 2px solid var(--kepty-orange); padding-bottom: 2px; cursor: pointer; transition: all 0.1s; display: inline-block; }
 
-/* ポップアップモーダル */
+/* モーダル表示（中央配置・高Zインデックス） */
 #detail-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 3000; display: none; align-items: center; justify-content: center; padding: 20px; }
 .modal-content { background: white; border-radius: 24px; padding: 24px; width: 100%; max-width: 400px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
 
@@ -241,7 +242,6 @@ function renderContent() {
     } else renderExamStep(filtered);
     lucide.createIcons();
 }
-
 function renderExamStep(pool) {
     const area = document.getElementById('main-content-area'); if (currentApp === 'shadowing' || currentApp === 'topicTalk' || currentApp === 'reading') return;
     let maxIdx = (currentApp === 'chunk') ? 30 : pool.length;
@@ -250,11 +250,12 @@ function renderExamStep(pool) {
         const it = pool[examIdx]; let ops = [], qTitle = (currentApp === 'vocabulary') ? it.word : it.question;
         if (currentApp === 'vocabulary') { let distractors = portalData.vocabulary.filter(w => w.meaning !== it.meaning).map(w => w.meaning); distractors.sort(() => Math.random() - 0.5); ops = [it.meaning, ...distractors.slice(0, 3)].sort(() => Math.random() - 0.5); } else { ops = [it.answer, it.option2, it.option3, it.option4].filter(Boolean).sort(() => Math.random() - 0.5); }
         area.innerHTML = generateProgressDotsHtml(pool.length, examIdx) + `<div class="text-center mb-8 px-2"><h2 class="text-xl md:text-2xl font-bold">${qTitle}</h2></div><div id="quiz-options-grid" class="grid grid-cols-1 gap-3 max-w-xl mx-auto">${ops.map(o => `<button ontouchstart="" onclick="handleExamAnswer('${qTitle.replace(/'/g, "\\'")}', '${o.replace(/'/g, "\\'")}', '${(currentApp==='vocabulary'?it.meaning:it.answer).replace(/'/g, "\\'")}', this)" class="quiz-option-btn"><span class="quiz-badge"></span>${o}</button>`).join('')}</div>`;
-    } else if (currentApp === 'chunk') { const ex = pool[0][`exam_${currentExamNum}`]; area.innerHTML = generateProgressDotsHtml(30, examIdx) + `<div class="kepty-card"><p class="text-lg font-bold">${ex[examIdx] || "No Data"}</p><div class="flex items-center justify-center gap-6 mt-6"><button ontouchstart="" onclick="examIdx--;" class="p-4 text-slate-400 ${examIdx===0?'invisible':''}"><i data-lucide="chevron-left"></i></button><div class="exam-mic-btn" onclick="toggleGenericRecord()"><i data-lucide="mic"></i></div><button ontouchstart="" onclick="examIdx++; renderContent();" class="nav-icon-btn p-4 next-btn-orange shadow-lg"><i data-lucide="chevron-right"></i></button></div></div>`; }
-    else if (currentApp === 'speaking' || currentApp === 'pronunciation') { const it = pool[examIdx]; area.innerHTML = generateProgressDotsHtml(pool.length, examIdx) + `<div class="kepty-card"><p class="text-lg font-bold">${it.assignment || it.word}</p><div class="flex items-center justify-center gap-6 mt-6"><button ontouchstart="" onclick="examIdx--;" class="p-4 text-slate-400 ${examIdx===0?'invisible':''}"><i data-lucide="chevron-left"></i></button><div class="exam-mic-btn" onclick="toggleGenericRecord()"><i data-lucide="mic"></i></div><button ontouchstart="" onclick="examIdx++; renderContent();" class="nav-icon-btn p-4 next-btn-orange shadow-lg"><i data-lucide="chevron-right"></i></button></div></div>`; }
+    } else if (currentApp === 'chunk') { const ex = pool[0][`exam_${currentExamNum}`]; area.innerHTML = generateProgressDotsHtml(30, examIdx) + `<div class="kepty-card"><p class="text-lg font-bold">${ex[examIdx] || "No Data"}</p><div class="voice-wave"><div class="wave-bar"></div></div><div class="flex items-center justify-center gap-6 mt-6"><button ontouchstart="" onclick="examIdx--;" class="p-4 text-slate-400 ${examIdx===0?'invisible':''}"><i data-lucide="chevron-left"></i></button><div class="exam-mic-btn" onclick="toggleGenericRecord()"><i data-lucide="mic"></i></div><button ontouchstart="" onclick="examIdx++; renderContent();" class="nav-icon-btn p-4 next-btn-orange shadow-lg"><i data-lucide="chevron-right"></i></button></div></div>`; }
+    else if (currentApp === 'speaking' || currentApp === 'pronunciation') { const it = pool[examIdx]; area.innerHTML = generateProgressDotsHtml(pool.length, examIdx) + `<div class="kepty-card">${currentApp==='speaking'?`<div class="sp-rule-box"><span class="sp-rule-badge">RULE</span><p class="sp-rule-text">${it.rules}</p></div>`:''}<p class="text-lg font-bold">${it.assignment || it.word}</p><div class="flex items-center justify-center gap-6 mt-6"><button ontouchstart="" onclick="examIdx--;" class="p-4 text-slate-400 ${examIdx===0?'invisible':''}"><i data-lucide="chevron-left"></i></button><div class="exam-mic-btn" onclick="toggleGenericRecord()"><i data-lucide="mic"></i></div><button ontouchstart="" onclick="examIdx++; renderContent();" class="nav-icon-btn p-4 next-btn-orange shadow-lg"><i data-lucide="chevron-right"></i></button></div></div>`; }
     lucide.createIcons();
 }
 function handleExamAnswer(q, sel, cor, btn) { const grid = document.getElementById('quiz-options-grid'); grid.style.pointerEvents = 'none'; examResults.push({ q: q, userSel: sel, correctA: cor, isCorrect: (sel === cor) }); grid.querySelectorAll('.quiz-option-btn').forEach(b => { if (b.innerText.trim() === cor) { b.style.border = "2px solid #10b981"; b.style.background = "#ecfdf5"; } else if (b === btn) { b.style.border = "2px solid #ef4444"; b.style.background = "#fef2f2"; } }); setTimeout(() => { examIdx++; renderContent(); }, 1500); }
+
 async function toggleGenericRecord() {
     if (!mediaRecorder || mediaRecorder.state === "inactive") {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -280,6 +281,7 @@ function toggleRecord(id) {
 function updatePhProgress(cat) { const f = portalData.pronunciation.filter(d => d.category === cat); document.getElementById('ph-progress-dots').innerHTML = Array.from({length: f.length}).map((_, i) => `<div class="progress-dot ${phCompletedIds.has(cat + '-' + i) ? 'filled' : ''}"></div>`).join(''); }
 function playAudio(d, b) { const p = document.getElementById('global-player'), s = "https://docs.google.com/uc?export=download&id=" + d.trim(); if (currentAudioUrl === s && !p.paused) { p.pause(); b.innerHTML = '<i data-lucide="volume-2"></i>'; } else { if (currentAudioUrl !== s) { p.src = s; currentAudioUrl = s; } p.play(); b.innerHTML = '<i data-lucide="pause"></i>'; } p.onended = () => b.innerHTML = '<i data-lucide="volume-2"></i>'; lucide.createIcons(); }
 function playTTS(text) { window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = 'en-US'; u.rate = 0.9; window.speechSynthesis.speak(u); }
+
 function generateHighlightedHtml(text, hls) {
     if (!hls || hls.length === 0) return text;
     let html = text; hls.forEach((hl, idx) => { const regex = new RegExp(`(${hl.target})`, 'g'); html = html.replace(regex, `<span class="hl-overlay" onclick="openShadowModal(${idx})" style="text-decoration: underline; text-decoration-color: ${HL_COLORS[hl.type]}; text-underline-offset: 4px; cursor: pointer;">$1</span>`); });
