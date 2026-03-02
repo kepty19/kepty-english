@@ -16,7 +16,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; -webkit-overflow-scrolli
 .bg-kepty-orange { background-color: var(--kepty-orange) !important; }
 .text-kepty-orange { color: var(--kepty-orange) !important; }
 
-/* ウェルカム画面（タイミング厳守） */
+/* ウェルカム画面（タイミング：0.5sで文字、3sで遷移） */
 #welcome-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 50% 50%, #FF6B3D 0%, #CE4A22 45%, #2A0B02 100%); z-index: 2000; transition: opacity 0.6s ease-out; display: flex; align-items: center; justify-content: center; }
 #welcome-message { color: #ffffff; font-size: 32px; font-weight: 900; letter-spacing: -0.02em; text-align: center; padding: 20px; white-space: pre-line; opacity: 0; transition: opacity 0.4s ease-in; }
 
@@ -41,6 +41,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; -webkit-overflow-scrolli
 .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
 
 /* カードデザイン */
+.word-card { background: white; border-radius: 20px; border: 1px solid #f1f5f9; position: relative; overflow: hidden; transition: all 0.3s; width: 100%; text-align: left; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
 .flip-card-chunk, .flip-card-voc { perspective: 1000px; min-height: 70px; cursor: pointer; margin-bottom: 8px; width: 100%; }
 .flip-card-voc { min-height: 140px; }
 .flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
@@ -66,12 +67,11 @@ body { font-family: 'Inter', -apple-system, sans-serif; -webkit-overflow-scrolli
 .footer-item.active { color: var(--kepty-orange); }
 .footer-item span { font-size: 7.5px; font-weight: 700; transform: translateY(-1px); margin-top: 2px; }
 
-/* 判定演出 */
-.word-card { background: white; border-radius: 20px; border: 1px solid #f1f5f9; position: relative; overflow: hidden; transition: all 0.3s; width: 100%; text-align: left; }
+/* 発音判定「Good!」の演出：最前面に飛び出すように修正 */
 .ph-card-content { transition: opacity 0.3s, filter 0.3s; }
 .card-judging .ph-card-content { opacity: 0.1 !important; filter: blur(4px); }
 .success-mode { background-color: #F0FDF4 !important; border: 1px solid #BBF7D0 !important; }
-.good-label { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: 900; font-size: 2.2rem; opacity: 0; pointer-events: none; transition: all 0.3s; z-index: 50; color: #16a34a; }
+.good-label { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: 900; font-size: 2.5rem; opacity: 0; pointer-events: none; transition: all 0.3s ease-out; z-index: 100; color: #16a34a; text-shadow: 0 0 10px rgba(255,255,255,0.9); }
 .good-label.show { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
 
 /* マイク */
@@ -79,8 +79,8 @@ body { font-family: 'Inter', -apple-system, sans-serif; -webkit-overflow-scrolli
 .record-btn.recording { background-color: var(--kepty-orange) !important; color: white !important; animation: ph-pulse 1s infinite !important; }
 @keyframes ph-pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(206, 74, 34, 0.1); } 100% { transform: scale(1); } }
 
-.exam-mic-btn { width: 58px; height: 58px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #e2e8f0; color: #94a3b8; background: #f8fafc; transition: 0.2s; cursor: pointer; position: relative; z-index: 20; }
-.exam-mic-btn:active { transform: scale(0.9); background: #f1f5f9; }
+/* 録音ボタン（Exam用グレー固定） */
+.exam-mic-btn { width: 58px; height: 58px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #e2e8f0; color: #94a3b8; background: #f8fafc; cursor: pointer; position: relative; z-index: 20; }
 
 .kepty-card { background: white; border-radius: 40px; padding: 24px 24px 40px 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.02); border: 1px solid #f1f5f9; min-height: 240px; display: flex; flex-direction: column; justify-content: center; text-align: center; position: relative; }
 .voice-wave { display: flex; align-items: center; justify-content: center; gap: 4px; height: 30px; margin: 20px 0; }
@@ -102,7 +102,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; -webkit-overflow-scrolli
 .modal-content { background: white; border-radius: 24px; padding: 24px; width: 100%; max-width: 400px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
 
 .card-inner-title { font-size: 13px; font-weight: 900; color: var(--kepty-orange) !important; margin-bottom: 12px; text-transform: uppercase; }
-.sp-rule-box { background: #f1f5f9; border-radius: 12px; padding: 12px 16px; margin-bottom: 16px; text-align: left; }
+.sp-rule-box { background: #f1f5f9; border-radius: 12px; padding: 12px 16px; margin-bottom: 16px; text-align: left; border: 1px solid #e2e8f0; }
 .sp-rule-badge { background: #475569; color: white; font-size: 9px; font-weight: 900; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-bottom: 8px; }
 .sp-rule-text { color: #1e293b; font-size: 13px; font-weight: 700; line-height: 1.6; }
 .review-item { text-align: left; padding: 12px; border-bottom: 1px solid #f1f5f9; font-size: 12px; }
@@ -138,9 +138,6 @@ const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwXjpU2jbuvLoLR
 const urlParams = new URLSearchParams(window.location.search);
 const userId = urlParams.get('id') || "tomohiro.19";
 
-// 最速でデータフェッチ開始
-const initialFetch = fetch(`${GAS_WEB_APP_URL}?id=${userId}`).then(res => res.json());
-
 let portalData = null; let currentApp = 'vocabulary'; let currentModeIdx = 0; let currentSubKey = ""; let currentTheme = ""; let examIdx = 0; let currentExamNum = 1; let examResults = []; let shadowingMode = 'front'; let currentAudioUrl = ""; let phCompletedIds = new Set();
 let mediaRecorder; let audioChunks = [];
 const HL_TYPES = ['Linking', 'Reduction', 'Flap T', 'Special Sound Changes'];
@@ -159,28 +156,32 @@ function switchApp(appName) {
     document.getElementById('mode-wrapper').style.display = (modes.length <= 1) ? 'none' : 'block';
     slider.style.width = `calc(100% / ${modes.length} - 2px)`;
     modeArea.innerHTML = modes.map((m, i) => `<div onclick="switchMode(${i})" class="mode-switch-btn ${i===0?'active':''}" id="mbtn-${i}">${m}</div>`).join('');
-    document.getElementById('main-content-area').innerHTML = "";
+    
+    // データがない場合のローディング表示（真っ白回避）
+    if (!portalData) {
+        document.getElementById('category-container').innerHTML = "";
+        document.getElementById('theme-menu-container').classList.add('hidden');
+        document.getElementById('main-content-area').innerHTML = `<div class="flex flex-col items-center justify-center py-20 text-slate-300"><i data-lucide="loader-2" class="w-8 h-8 animate-spin mb-4"></i><p class="text-sm font-bold tracking-widest uppercase">Loading Data...</p></div>`;
+        lucide.createIcons();
+        return;
+    }
+    
     switchMode(0); renderCategories();
 }
 function switchMode(idx) { currentModeIdx = idx; document.getElementById('mode-slider').style.transform = `translateX(${idx * 100}%)`; document.querySelectorAll('.mode-switch-btn').forEach((btn, i) => btn.classList.toggle('active', i === idx)); document.getElementById('ph-progress-area').classList.toggle('hidden', !(currentApp === 'pronunciation' && currentModeIdx === 2)); renderThemes(); }
-
 function renderCategories() {
-    const container = document.getElementById('category-container');
-    if (!portalData || !portalData[currentApp]) { container.innerHTML = ""; renderThemes(); return; }
-    const data = portalData[currentApp];
+    const container = document.getElementById('category-container'), data = portalData[currentApp]; if(!data) return;
     const key = (currentApp === 'chunk' || currentApp === 'shadowing' || currentApp === 'topicTalk') ? 'lesson' : (portalData[currentApp][0].category ? 'category' : 'lesson');
     const uniqueKeys = [...new Set(data.map(item => item.lesson || item.category))].filter(Boolean);
     if (!currentSubKey || !uniqueKeys.includes(currentSubKey)) currentSubKey = uniqueKeys[0];
     container.innerHTML = uniqueKeys.map(k => `<button onclick="selectSubKey('${k}')" class="category-tab ${currentSubKey === k ? 'active' : ''}">${k.charAt(0).toUpperCase() + k.slice(1).toLowerCase()}</button>`).join('');
     renderThemes();
 }
-
 function renderThemes() {
     const themeMenu = document.getElementById('theme-menu-container'), themeList = document.getElementById('theme-scroll-list');
     const isEx = (currentApp === 'pronunciation' ? currentModeIdx === 2 : (currentApp === 'chunk' || currentApp === 'vocabulary' || currentApp === 'grammar' || currentApp === 'speaking' ? currentModeIdx === 1 : false));
     if (isEx || currentApp === 'vocabulary') { themeMenu.classList.add('hidden'); renderContent(); return; }
-    if (!portalData || !portalData[currentApp]) { themeMenu.classList.add('hidden'); renderContent(); return; }
-    const data = portalData[currentApp];
+    const data = portalData[currentApp], key = (currentApp === 'chunk' || currentApp === 'shadowing' || currentApp === 'topicTalk') ? 'lesson' : (portalData[currentApp][0].category ? 'category' : 'lesson');
     const filteredBySub = data.filter(d => (d.lesson || d.category) === currentSubKey);
     const themes = [...new Set(filteredBySub.map(d => d.theme || d.point))].filter(Boolean);
     if (themes.length === 0) { themeMenu.classList.add('hidden'); renderContent(); return; }
@@ -188,7 +189,6 @@ function renderThemes() {
     themeMenu.classList.remove('hidden'); themeList.innerHTML = themes.map(t => `<div onclick="selectTheme('${t}')" class="theme-item ${currentTheme === t ? 'active' : ''}">${currentApp==='shadowing'?'#'+t:t}</div>`).join('');
     renderContent();
 }
-
 function selectSubKey(key) { currentSubKey = key; currentTheme = ""; examIdx = 0; examResults = []; shadowingMode = 'front'; renderCategories(); }
 function selectTheme(themeName) { currentTheme = themeName; shadowingMode = 'front'; renderThemes(); }
 function generateProgressDotsHtml(total, current) {
@@ -199,25 +199,24 @@ function generateProgressDotsHtml(total, current) {
 
 function renderContent() {
     const area = document.getElementById('main-content-area');
-    
-    // データが未取得の場合はローディング表示
-    if (!portalData || !portalData[currentApp]) {
-        area.innerHTML = `<div class="flex flex-col items-center justify-center py-20 text-slate-300"><i data-lucide="loader-2" class="w-8 h-8 animate-spin mb-4"></i><p class="text-sm font-bold tracking-widest uppercase">Loading Data...</p></div>`;
-        lucide.createIcons();
-        return;
-    }
-
-    const data = portalData[currentApp];
+    if (!portalData) return;
+    const data = portalData[currentApp]; if(!data) return;
     const isEx = (currentApp === 'pronunciation' ? currentModeIdx === 2 : currentModeIdx === 1);
     const filtered = data.filter(d => (d.lesson || d.category) === currentSubKey && (isEx || (!currentTheme || d.theme === currentTheme || d.point === currentTheme || currentApp === 'vocabulary')));
     
     if (currentApp === 'pronunciation') {
-        if (currentModeIdx === 0) { area.innerHTML = `<div class="word-card p-8 text-slate-700 text-left leading-normal">${portalData.pronunciationManual[currentSubKey.toLowerCase().trim()] || "Coming soon!"}</div>`; }
+        if (currentModeIdx === 0) { area.innerHTML = `<div class="word-card p-8 text-slate-700 text-left leading-relaxed">${portalData.pronunciationManual[currentSubKey.toLowerCase().trim()] || "Coming soon!"}</div>`; }
         else if (currentModeIdx === 1) { const vids = []; data.filter(i => i.category === currentSubKey).forEach(item => { if (item.videos) item.videos.forEach(v => { if (!vids.includes(v)) vids.push(v); }); }); area.innerHTML = vids.length > 0 ? `<div class="flex flex-col">${vids.map(v => `<div class="video-wrapper">${v}</div>`).join('')}</div>` : `<p class="py-10 font-bold">No videos available.</p>`; }
-        else { updatePhProgress(currentSubKey); area.innerHTML = `<div class="space-y-4">` + filtered.map((item, idx) => { const id = `${currentSubKey}-${idx}`; const isDone = phCompletedIds.has(id); return `<div id="phcard-${id}" class="word-card p-5 flex items-center justify-between shadow-sm ${isDone ? 'success-mode' : ''}"><div class="good-label" id="phlabel-${id}">Good!</div><div class="ph-card-content flex-1 min-w-0"><div class="text-2xl font-black text-slate-900 tracking-tight mb-1" onclick="playTTS('${item.word}')">${item.word}</div><div class="flex items-center gap-2 text-slate-400 text-sm font-bold mb-2"><span>${item.symbol}</span><span>${item.katakana}</span><span>|</span><span>${item.translation}</span></div><div class="text-[10px] font-black text-kepty-orange uppercase text-left">${item.point}</div></div><div class="flex flex-col items-center gap-4"><button onclick="playTTS('${item.word}')" class="w-9 h-9 rounded-full bg-slate-50 text-slate-400 flex items-center justify-center"><i data-lucide="volume-2" class="w-5 h-5"></i></button><button id="phbtn-${id}" onclick="toggleRecord('${id}')" class="record-btn shrink-0 ${isDone ? 'bg-kepty-light-orange' : ''}"><i data-lucide="mic" class="w-6 h-6"></i></button></div></div>`; }).join('') + `</div>`; }
+        else { 
+            updatePhProgress(currentSubKey); 
+            area.innerHTML = `<div class="space-y-4">` + filtered.map((item, idx) => { 
+                const id = `${currentSubKey}-${idx}`; const isDone = phCompletedIds.has(id); 
+                return `<div id="phcard-${id}" class="word-card p-5 flex items-center justify-between shadow-sm ${isDone ? 'success-mode' : ''}"><div class="good-label" id="phlabel-${id}">Good!</div><div class="ph-card-content flex-1 min-w-0"><div class="text-2xl font-black text-slate-900 tracking-tight mb-1" onclick="playTTS('${item.word}')">${item.word}</div><div class="flex items-center gap-2 text-slate-400 text-sm font-bold mb-2"><span>${item.symbol}</span><span>${item.katakana}</span><span>|</span><span>${item.translation}</span></div><div class="text-[10px] font-black text-kepty-orange uppercase text-left">${item.point}</div></div><div class="flex flex-col items-center gap-4"><button onclick="playTTS('${item.word}')" class="w-9 h-9 rounded-full bg-slate-50 text-slate-400 flex items-center justify-center"><i data-lucide="volume-2" class="w-5 h-5"></i></button><button id="phbtn-${id}" onclick="toggleRecord('${id}')" class="record-btn shrink-0 ${isDone ? 'bg-kepty-light-orange' : ''}"><i data-lucide="mic" class="w-6 h-6"></i></button></div></div>`; 
+            }).join('') + `</div>`; 
+        }
     } else if (currentModeIdx === 0) {
         if (currentApp === 'chunk') { 
-            let h = filtered[0]?.point ? `<section class="bg-slate-100 p-5 rounded-[24px] border border-slate-200 mb-6 text-left text-sm font-bold text-slate-700 leading-normal"><div class="flex items-center gap-2 mb-2"><span class="text-[10px] font-black bg-slate-700 text-white px-2 py-0.5 rounded tracking-widest uppercase">Point</span></div>${filtered[0].point}</section>` : ''; 
+            let h = filtered[0]?.point ? `<section class="bg-slate-100 p-5 rounded-[24px] border border-slate-200 mb-6 text-left text-sm font-bold text-slate-700 leading-relaxed"><div class="flex items-center gap-2 mb-2"><span class="text-[10px] font-black bg-slate-700 text-white px-2 py-0.5 rounded tracking-widest uppercase">Point</span></div>${filtered[0].point}</section>` : ''; 
             area.innerHTML = h + `<div class="grid grid-cols-1 md:grid-cols-2 gap-3">` + filtered.map((item, i) => `<div class="flip-card-chunk" onclick="this.classList.toggle('flipped')" ontouchstart=""><div class="flip-card-inner"><div class="flip-card-front"><span class="absolute top-2 left-3 text-[10px] font-black text-kepty-orange opacity-60 font-mono">#${i+1}</span><div class="absolute bottom-2 right-2 text-slate-400 opacity-40"><i data-lucide="hand" class="w-4 h-4"></i></div><p class="text-base font-bold text-left leading-tight">${item.sentence}</p></div><div class="flip-card-back"><button onclick="event.stopPropagation(); playTTS('${item.answer.replace(/'/g, "\\'")}');" class="absolute top-2 right-3 p-1.5 hover:bg-emerald-100 rounded-lg text-emerald-600 transition-colors"><i data-lucide="volume-2" class="w-4 h-4"></i></button><span class="absolute top-2 left-3 text-[10px] font-black text-emerald-600 opacity-60 font-mono">#${i+1}</span><span class="text-[10px] text-emerald-600 font-bold block text-left">Answer</span><p class="text-base font-bold text-slate-800 text-left leading-tight">${item.answer}</p><div class="absolute bottom-2 right-2 text-slate-400 opacity-40"><i data-lucide="hand" class="w-4 h-4"></i></div></div></div></div>`).join('') + `</div>`; 
         }
         else if (currentApp === 'shadowing') { const item = filtered[0]; if (!item) return; area.innerHTML = `<div class="shadowing-content-card bg-white rounded-[24px] border border-f1f5f9 overflow-hidden"><div class="flex items-center justify-between p-6 border-b border-f1f5f9"><div class="mode-switch-container w-[230px]"><div class="mode-slider w-[calc(50%-2px)] ${shadowingMode==='back'?'translate-x-full':''}"></div><div onclick="shadowingMode='front'; renderContent();" class="mode-switch-btn ${shadowingMode==='front'?'active':''}">Script</div><div onclick="shadowingMode='back'; renderContent();" class="mode-switch-btn ${shadowingMode==='back'?'active':''}">Sound Changes</div></div><button id="sh-play-btn" onclick="playAudio('${item.audioId}', this)" class="w-11 h-11 rounded-full bg-slate-50 text-kepty-orange flex items-center justify-center shadow-sm active:scale-90 transition-all"><i data-lucide="volume-2"></i></button></div><div class="p-6 text-left"><p class="card-inner-title" style="color:var(--kepty-orange);">${shadowingMode==='front'?'Script':'Sound Changes'}</p><div class="text-slate-700 text-lg leading-[1.8] font-medium whitespace-pre-wrap text-left">${shadowingMode==='front' ? item.text : generateHighlightedHtml(item.text, item.highlights)}</div></div></div>`; }
@@ -238,7 +237,7 @@ function renderContent() {
         else if (currentApp === 'vocabulary') { 
             area.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">` + filtered.map(w => `<div class="flip-card-voc" onclick="this.classList.toggle('flipped')" ontouchstart=""><div class="flip-card-inner"><div class="flip-card-front" style="justify-content: flex-start; padding-top: 24px;"><div class="flex justify-between items-start mb-0.5"><span class="text-[9px] font-black text-kepty-orange uppercase tracking-wider">${w.pos}</span><button onclick="event.stopPropagation(); playTTS('${w.word.replace(/'/g, "\\'")}')" class="w-9 h-9 rounded-full bg-slate-50 text-slate-400 flex items-center justify-center -mt-2"><i data-lucide="volume-2" class="w-5 h-5"></i></button></div><h3 class="text-2xl font-black text-slate-900 mb-0.5 tracking-tight">${w.word}</h3><p class="text-slate-400 font-mono text-xs">${w.pronunciation}</p><div class="absolute bottom-2 right-2 text-slate-400 opacity-40"><i data-lucide="hand" class="w-4 h-4"></i></div></div><div class="flip-card-back"><h3 class="text-lg font-bold mb-2 text-slate-800">${w.meaning}</h3><div class="bg-black/5 p-3 rounded-xl text-[11px] italic text-slate-600 leading-relaxed overflow-y-auto max-h-[80px]">${w.example.replace(new RegExp(`(${w.word})`, 'gi'), '<strong>$1</strong>')}</div><div class="absolute bottom-2 right-2 text-slate-400 opacity-40"><i data-lucide="hand" class="w-4 h-4"></i></div></div></div></div>`).join('') + `</div>`; 
         }
-        // 修正箇所：GrammarのExplainの余分な改行を防ぐため `whitespace-pre-wrap` を削除
+        // 修正箇所：Grammar Explainの行間を元に戻す（whitespace-pre-wrapの削除）
         else area.innerHTML = `<div class="word-card p-8 text-slate-700 text-left leading-normal">${portalData.grammarManual[currentSubKey] || "No Explanation Prepared."}</div>`;
     } else renderExamStep(filtered);
     lucide.createIcons();
@@ -320,26 +319,33 @@ function openShadowModal(idx) {
 
 function runWelcomeOverlay() {
     const overlay = document.getElementById('welcome-overlay'), msgEl = document.getElementById('welcome-message');
+    
+    // 0.5秒後に文字を表示
     setTimeout(() => { msgEl.style.opacity = '1'; }, 500); 
+    
+    // 最速でデータフェッチ開始
+    fetch(`${GAS_WEB_APP_URL}?id=${userId}`).then(res => res.json()).then(data => {
+        portalData = data;
+        // もしすでに3秒経過してウェルカム画面が消えていれば即描画
+        if (overlay.style.display === 'none') {
+            switchApp(currentApp);
+        }
+    });
+
+    // タイミング厳守：開始から3秒で強制フェードアウト＆描画切替
     setTimeout(() => { 
         overlay.style.opacity = '0'; 
-        setTimeout(() => { overlay.style.display = 'none'; }, 600); 
-    }, 3000); // 厳密に3秒で消す
+        setTimeout(() => { 
+            overlay.style.display = 'none'; 
+            switchApp('vocabulary'); // ここでコンテンツを完全に描画
+            lucide.createIcons();
+        }, 600); 
+    }, 3000); 
 }
 
 window.onload = () => { 
     runWelcomeOverlay(); 
-    lucide.createIcons(); 
-    
-    // データがない間の初期枠組み（ローディングスピナー）を描画
-    switchApp('vocabulary'); 
-    
-    // 取得完了時に完全な状態へ再描画
-    initialFetch.then(data => {
-        portalData = data; 
-        switchApp(currentApp); 
-    });
-    
+    lucide.createIcons();
     const f = document.getElementById('main-footer'); 
     f.addEventListener('scroll', () => { document.getElementById('footer-arrow').style.display = (f.scrollLeft + f.clientWidth >= f.scrollWidth - 10) ? 'none' : 'flex'; });
 };
