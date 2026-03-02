@@ -16,7 +16,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; -webkit-overflow-scrolli
 .bg-kepty-orange { background-color: var(--kepty-orange) !important; }
 .text-kepty-orange { color: var(--kepty-orange) !important; }
 
-/* ウェルカム画面（タイミング厳守） */
+/* ウェルカム画面（タイミング修正済） */
 #welcome-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 50% 50%, #FF6B3D 0%, #CE4A22 45%, #2A0B02 100%); z-index: 2000; transition: opacity 0.6s ease-out; display: flex; align-items: center; justify-content: center; }
 #welcome-message { color: #ffffff; font-size: 32px; font-weight: 900; letter-spacing: -0.02em; text-align: center; padding: 20px; white-space: pre-line; opacity: 0; transition: opacity 0.4s ease-in; }
 
@@ -49,7 +49,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; -webkit-overflow-scrolli
 .flip-card-front { background: white; border: 1px solid #f1f5f9; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
 .flip-card-back { background: var(--kepty-light-green); border: 1px solid #d1fae5; transform: rotateY(180deg); }
 
-/* クイズ判定アイコン */
+/* クイズ判定アイコン（IMG_0124.jpg再現） */
 .quiz-badge { position: absolute; top: 12px; right: 12px; width: 28px; height: 28px; border-radius: 50%; display: none; align-items: center; justify-content: center; color: white; z-index: 50; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
 .quiz-badge.correct { background-color: #10b981; display: flex; }
 .quiz-badge.incorrect { background-color: #ef4444; display: flex; }
@@ -79,8 +79,8 @@ body { font-family: 'Inter', -apple-system, sans-serif; -webkit-overflow-scrolli
 .record-btn.recording { background-color: var(--kepty-orange) !important; color: white !important; animation: ph-pulse 1s infinite !important; }
 @keyframes ph-pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(206, 74, 34, 0.1); } 100% { transform: scale(1); } }
 
-.exam-mic-btn { width: 58px; height: 58px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #e2e8f0; color: #94a3b8; background: #f8fafc; transition: 0.2s; cursor: pointer; position: relative; z-index: 20; }
-.exam-mic-btn:active { transform: scale(0.9); background: #f1f5f9; }
+/* 録音ボタン */
+.exam-mic-btn { width: 58px; height: 58px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #e2e8f0; color: #94a3b8; background: #f8fafc; cursor: pointer; position: relative; z-index: 20; }
 
 .kepty-card { background: white; border-radius: 40px; padding: 24px 24px 40px 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.02); border: 1px solid #f1f5f9; min-height: 240px; display: flex; flex-direction: column; justify-content: center; text-align: center; position: relative; }
 .voice-wave { display: flex; align-items: center; justify-content: center; gap: 4px; height: 30px; margin: 20px 0; }
@@ -131,7 +131,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; -webkit-overflow-scrolli
     <div onclick="switchApp('speaking')" id="nav-speaking" class="footer-item"><i data-lucide="message-square"></i><span>Speaking Form</span></div>
     <div onclick="switchApp('chunk')" id="nav-chunk" class="footer-item"><i data-lucide="layers"></i><span>Sentence Building</span></div>
 </footer>
-<div id="detail-modal" onclick="this.style.display='none'"><div class="modal-content" onclick="event.stopPropagation()"><div class="flex items-center"><div id="modal-bar" class="w-1 self-stretch rounded-full mr-4"></div><div class="flex-1 text-left"><div class="flex items-center gap-3 mb-1"><span id="modal-title-text" class="text-[10px] font-black uppercase tracking-wider"></span><div class="w-px h-3 bg-slate-200"></div><span id="modal-target" class="text-sm font-bold text-slate-800"></span></div><div id="modal-desc" class="text-sm text-slate-700 font-medium leading-relaxed"></div></div></div></div></div>
+<div id="detail-modal" onclick="this.style.display='none'"><div class="modal-content" onclick="event.stopPropagation()"><div class="flex items-center"><div id="modal-bar" class="w-1 self-stretch rounded-full mr-4"></div><div class="flex-1 text-left"><div class="flex items-center gap-3 mb-1"><span id="modal-title-text" class="text-[10px] font-black uppercase tracking-wider"></span><div class="w-px h-3 bg-slate-200"></div><span id="modal-target" class="text-sm font-bold text-slate-800"></span></div><div id="modal-desc" class="text-sm text-slate-700 font-medium leading-relaxed text-left"></div></div></div></div></div>
 <audio id="global-player" class="hidden"></audio>
 <script>
 const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwXjpU2jbuvLoLRIW5xqMZJTe728VOylyGBAP192o27Y1CJisC6vb6dOmO94a7lKjvA/exec";
@@ -191,10 +191,17 @@ function renderContent() {
     const area = document.getElementById('main-content-area'), data = portalData[currentApp]; if(!data) return;
     const isEx = (currentApp === 'pronunciation' ? currentModeIdx === 2 : currentModeIdx === 1);
     const filtered = data.filter(d => (d.lesson || d.category) === currentSubKey && (isEx || (!currentTheme || d.theme === currentTheme || d.point === currentTheme || currentApp === 'vocabulary')));
+    
     if (currentApp === 'pronunciation') {
         if (currentModeIdx === 0) { area.innerHTML = `<div class="word-card p-8 text-slate-700 text-left leading-relaxed">${portalData.pronunciationManual[currentSubKey.toLowerCase().trim()] || "Coming soon!"}</div>`; }
         else if (currentModeIdx === 1) { const vids = []; data.filter(i => i.category === currentSubKey).forEach(item => { if (item.videos) item.videos.forEach(v => { if (!vids.includes(v)) vids.push(v); }); }); area.innerHTML = vids.length > 0 ? `<div class="flex flex-col">${vids.map(v => `<div class="video-wrapper">${v}</div>`).join('')}</div>` : `<p class="py-10 font-bold">No videos available.</p>`; }
-        else { updatePhProgress(currentSubKey); area.innerHTML = `<div class="space-y-4">` + filtered.map((item, idx) => { const id = `${currentSubKey}-${idx}`; const isDone = phCompletedIds.has(id); return `<div id="phcard-${id}" class="word-card p-5 flex items-center justify-between shadow-sm ${isDone ? 'success-mode' : ''}"><div class="good-label" id="phlabel-${id}">Good!</div><div class="ph-card-content flex-1 min-w-0"><div class="text-2xl font-black text-slate-900 tracking-tight mb-1" onclick="playTTS('${item.word}')">${item.word}</div><div class="flex items-center gap-2 text-slate-400 text-sm font-bold mb-2"><span>${item.symbol}</span><span>${item.katakana}</span><span>|</span><span>${item.translation}</span></div><div class="text-[10px] font-black text-kepty-orange uppercase text-left">${item.point}</div></div><div class="flex flex-col items-center gap-4"><button onclick="playTTS('${item.word}')" class="w-9 h-9 rounded-full bg-slate-50 text-slate-400 flex items-center justify-center"><i data-lucide="volume-2" class="w-5 h-5"></i></button><button id="phbtn-${id}" onclick="toggleRecord('${id}')" class="record-btn shrink-0 ${isDone ? 'bg-kepty-light-orange' : ''}"><i data-lucide="mic" class="w-6 h-6"></i></button></div></div>`; }).join('') + `</div>`; }
+        else { 
+            updatePhProgress(currentSubKey); 
+            area.innerHTML = `<div class="space-y-4">` + filtered.map((item, idx) => { 
+                const id = `${currentSubKey}-${idx}`; const isDone = phCompletedIds.has(id); 
+                return `<div id="phcard-${id}" class="word-card p-5 flex items-center justify-between shadow-sm ${isDone ? 'success-mode' : ''}"><div class="good-label" id="phlabel-${id}">Good!</div><div class="ph-card-content flex-1 min-w-0"><div class="text-2xl font-black text-slate-900 tracking-tight mb-1" onclick="playTTS('${item.word}')">${item.word}</div><div class="flex items-center gap-2 text-slate-400 text-sm font-bold mb-2"><span>${item.symbol}</span><span>${item.katakana}</span><span>|</span><span>${item.translation}</span></div><div class="text-[10px] font-black text-kepty-orange uppercase text-left">${item.point}</div></div><div class="flex flex-col items-center gap-4"><button onclick="playTTS('${item.word}')" class="w-9 h-9 rounded-full bg-slate-50 text-slate-400 flex items-center justify-center"><i data-lucide="volume-2" class="w-5 h-5"></i></button><button id="phbtn-${id}" onclick="toggleRecord('${id}')" class="record-btn shrink-0 ${isDone ? 'bg-kepty-light-orange' : ''}"><i data-lucide="mic" class="w-6 h-6"></i></button></div></div>`; 
+            }).join('') + `</div>`; 
+        }
     } else if (currentModeIdx === 0) {
         if (currentApp === 'chunk') { 
             let h = filtered[0]?.point ? `<section class="bg-slate-100 p-5 rounded-[24px] border border-slate-200 mb-6 text-left text-sm font-bold text-slate-700 leading-relaxed"><div class="flex items-center gap-2 mb-2"><span class="text-[10px] font-black bg-slate-700 text-white px-2 py-0.5 rounded tracking-widest uppercase">Point</span></div>${filtered[0].point}</section>` : ''; 
@@ -202,8 +209,9 @@ function renderContent() {
         }
         else if (currentApp === 'shadowing') { const item = filtered[0]; if (!item) return; area.innerHTML = `<div class="shadowing-content-card bg-white rounded-[24px] border border-f1f5f9 overflow-hidden"><div class="flex items-center justify-between p-6 border-b border-f1f5f9"><div class="mode-switch-container w-[230px]"><div class="mode-slider w-[calc(50%-2px)] ${shadowingMode==='back'?'translate-x-full':''}"></div><div onclick="shadowingMode='front'; renderContent();" class="mode-switch-btn ${shadowingMode==='front'?'active':''}">Script</div><div onclick="shadowingMode='back'; renderContent();" class="mode-switch-btn ${shadowingMode==='back'?'active':''}">Sound Changes</div></div><button id="sh-play-btn" onclick="playAudio('${item.audioId}', this)" class="w-11 h-11 rounded-full bg-slate-50 text-kepty-orange flex items-center justify-center shadow-sm active:scale-90 transition-all"><i data-lucide="volume-2"></i></button></div><div class="p-6 text-left"><p class="card-inner-title" style="color:var(--kepty-orange);">${shadowingMode==='front'?'Script':'Sound Changes'}</p><div class="text-slate-700 text-lg leading-[1.8] font-medium whitespace-pre-wrap text-left">${shadowingMode==='front' ? item.text : generateHighlightedHtml(item.text, item.highlights)}</div></div></div>`; }
         else if (currentApp === 'topicTalk') { 
+            if (examIdx >= filtered.length) { area.innerHTML = `<div class="kepty-card flex items-center justify-center"><p class="text-4xl font-black text-kepty-orange tracking-tight mb-8">Complete!</p><div class="mt-4"><span onclick="examIdx=0; renderContent();" class="restart-link">Restart</span></div></div>`; lucide.createIcons(); return; }
             const item = filtered[examIdx]; if(!item) return; 
-            area.innerHTML = generateProgressDotsHtml(filtered.length, examIdx) + `<div class="kepty-card flex-1 flex flex-col justify-between"><div class="mb-2"><span class="text-[10px] font-black text-kepty-orange uppercase bg-kepty-light-orange px-2 py-0.5 rounded-md">${item.theme}</span></div><p class="text-xl font-bold text-slate-800 mb-8 whitespace-pre-wrap">${item.training_topic}</p><div class="flex flex-col items-center gap-6 mt-6"><div class="voice-wave"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div><div class="flex items-center justify-center gap-6 w-full px-10"><button onclick="examIdx = Math.max(0, examIdx-1); renderContent();" class="nav-icon-btn p-4 bg-white/50 text-slate-400 rounded-full shadow-sm ${examIdx===0?'invisible':''} active:scale-95"><i data-lucide="chevron-left"></i></button><button onclick="toggleGenericRecord()" class="record-btn w-16 h-16 shrink-0 shadow-lg shadow-kepty-orange/20"><i data-lucide="mic" class="w-8 h-8"></i></button><button onclick="examIdx = Math.min(filtered.length-1, examIdx+1); renderContent();" class="nav-icon-btn p-4 next-btn-orange rounded-full shadow-lg active:scale-95 ${examIdx>=filtered.length-1?'invisible':''}"><i data-lucide="chevron-right"></i></button></div></div></div>`; 
+            area.innerHTML = generateProgressDotsHtml(filtered.length, examIdx) + `<div class="kepty-card flex-1 flex flex-col justify-between"><div class="mb-2"><span class="text-[10px] font-black text-kepty-orange uppercase bg-kepty-light-orange px-2 py-0.5 rounded-md">${item.theme}</span></div><p class="text-xl font-bold text-slate-800 mb-8 whitespace-pre-wrap">${item.training_topic}</p><div class="flex flex-col items-center gap-6 mt-6"><div class="voice-wave"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div><div class="flex items-center justify-center gap-6 w-full px-10"><button onclick="examIdx = Math.max(0, examIdx-1); renderContent();" class="nav-icon-btn p-4 bg-white/50 text-slate-400 rounded-full shadow-sm ${examIdx===0?'invisible':''} active:scale-95"><i data-lucide="chevron-left"></i></button><button onclick="toggleGenericRecord()" class="exam-mic-btn w-16 h-16 shrink-0 shadow-lg"><i data-lucide="mic" class="w-8 h-8"></i></button><button onclick="topicTalkNext(${filtered.length})" class="nav-icon-btn p-4 next-btn-orange rounded-full shadow-lg active:scale-95 ${examIdx>=filtered.length-1?'invisible':''}"><i data-lucide="chevron-right"></i></button></div></div></div>`; 
         }
         else if (currentApp === 'reading') { 
             const item = filtered[0]; if (!item) return; 
@@ -212,15 +220,16 @@ function renderContent() {
         }
         else if (currentApp === 'speaking') { 
             const item = filtered[0]; if (!item) return; 
-            area.innerHTML = `<div class="word-card p-8 shadow-sm text-left border border-slate-100 flex flex-col gap-6"><h4 class="text-xl font-black text-slate-900 mb-0 tracking-tight">${item.point}</h4><section class="bg-slate-100 p-5 rounded-[24px] border border-slate-200 text-sm font-medium text-slate-700 leading-relaxed whitespace-pre-wrap"><div class="flex items-center gap-2 mb-2"><span class="text-[10px] font-black bg-slate-700 text-white px-2 py-0.5 rounded tracking-widest uppercase">Point</span></div>${item.background}</section><div class="bg-slate-50 p-5 rounded-xl border border-slate-100"><p class="text-[9px] font-black text-kepty-orange uppercase tracking-wider mb-2">Example Sentences</p><p class="text-sm text-slate-600 whitespace-pre-line leading-relaxed">${item.example}</p></div></div>`; 
+            area.innerHTML = `<div class="word-card p-8 shadow-sm text-left border border-slate-100 flex flex-col gap-6"><h4 class="text-xl font-black text-slate-900 mb-0 tracking-tight">${item.point}</h4><section class="bg-slate-100 p-5 rounded-[24px] border border-slate-200 text-sm font-medium text-slate-700 leading-relaxed whitespace-pre-wrap"><div class="flex items-center gap-2 mb-2"><span class="text-[10px] font-black bg-slate-700 text-white px-2 py-0.5 rounded tracking-widest uppercase">Point</span></div>${item.background}</section><div class="bg-slate-50 p-5 rounded-xl border border-slate-100"><p class="text-[9px] font-black text-kepty-orange uppercase tracking-wider mb-2">Example Sentences</p><p class="text-sm text-slate-600 whitespace-pre-line leading-relaxed italic-none" style="font-style: normal;">${item.example}</p></div></div>`; 
         }
         else if (currentApp === 'vocabulary') { 
             area.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">` + filtered.map(w => `<div class="flip-card-voc" onclick="this.classList.toggle('flipped')" ontouchstart=""><div class="flip-card-inner"><div class="flip-card-front" style="justify-content: flex-start; padding-top: 24px;"><div class="flex justify-between items-start mb-0.5"><span class="text-[9px] font-black text-kepty-orange uppercase tracking-wider">${w.pos}</span><button onclick="event.stopPropagation(); playTTS('${w.word.replace(/'/g, "\\'")}')" class="w-9 h-9 rounded-full bg-slate-50 text-slate-400 flex items-center justify-center -mt-2"><i data-lucide="volume-2" class="w-5 h-5"></i></button></div><h3 class="text-2xl font-black text-slate-900 mb-0.5 tracking-tight">${w.word}</h3><p class="text-slate-400 font-mono text-xs">${w.pronunciation}</p><div class="absolute bottom-2 right-2 text-slate-400 opacity-40"><i data-lucide="hand" class="w-4 h-4"></i></div></div><div class="flip-card-back"><h3 class="text-lg font-bold mb-2 text-slate-800">${w.meaning}</h3><div class="bg-black/5 p-3 rounded-xl text-[11px] italic text-slate-600 leading-relaxed overflow-y-auto max-h-[80px]">${w.example.replace(new RegExp(`(${w.word})`, 'gi'), '<strong>$1</strong>')}</div><div class="absolute bottom-2 right-2 text-slate-400 opacity-40"><i data-lucide="hand" class="w-4 h-4"></i></div></div></div></div>`).join('') + `</div>`; 
         }
-        else area.innerHTML = `<div class="word-card p-8 text-slate-700 text-left leading-relaxed whitespace-pre-wrap">${portalData.grammarManual[currentSubKey] || "No Explanation Prepared."}</div>`;
+        else area.innerHTML = `<div class="word-card p-8 text-slate-700 text-left leading-normal whitespace-pre-wrap">${portalData.grammarManual[currentSubKey] || "No Explanation Prepared."}</div>`;
     } else renderExamStep(filtered);
     lucide.createIcons();
 }
+function topicTalkNext(len) { if(examIdx < len - 1) { examIdx++; renderContent(); } else { examIdx = len; renderContent(); } }
 function renderExamStep(pool) {
     const area = document.getElementById('main-content-area'); if (currentApp === 'shadowing' || currentApp === 'topicTalk' || currentApp === 'reading') return;
     let maxIdx = (currentApp === 'chunk') ? 30 : pool.length;
@@ -262,7 +271,7 @@ async function toggleGenericRecord() {
             reader.onloadend = () => {
                 const base64data = reader.result.split(',')[1];
                 const payload = { userId: userId, app: currentApp, theme: currentTheme || currentSubKey, audioBase64: base64data };
-                fetch(GAS_WEB_APP_URL, { method: "POST", body: JSON.stringify(payload) }).then(res => res.json()).then(data => console.log("Saved to Drive:", data));
+                fetch(GAS_WEB_APP_URL, { method: "POST", body: JSON.stringify(payload) }).then(res => res.json()).then(data => console.log("Saved:", data));
             };
         };
         mediaRecorder.start();
@@ -273,7 +282,7 @@ function toggleRecord(id) {
     if (!btn.classList.contains('recording')) { btn.classList.add('recording'); toggleGenericRecord(); }
     else { btn.classList.remove('recording'); toggleGenericRecord(); card.classList.add('card-judging'); setTimeout(() => { phCompletedIds.add(id); card.classList.add('success-mode'); lbl.classList.add('show'); setTimeout(() => { lbl.classList.remove('show'); card.classList.remove('card-judging'); renderContent(); }, 1500); }, 300); }
 }
-function updatePhProgress(cat) { const f = portalData.pronunciation.filter(d => d.category === cat); document.getElementById('ph-progress-dots').innerHTML = Array.from({length: f.length}).map((_, i) => `<div class="progress-dot ${phCompletedIds.has(cat + '-' + i) ? 'filled' : ''}"></div>`).join(''); }
+function updatePhProgress(cat) { const f = portalData.pronunciation.filter(d => (d.category || d.lesson) === cat); document.getElementById('ph-progress-dots').innerHTML = Array.from({length: f.length}).map((_, i) => `<div class="progress-dot ${phCompletedIds.has(cat + '-' + i) ? 'filled' : ''}"></div>`).join(''); }
 function playAudio(d, b) { 
     const p = document.getElementById('global-player'), s = "https://docs.google.com/uc?export=download&id=" + d.trim(); 
     if (currentAudioUrl === s && !p.paused) { p.pause(); b.innerHTML = '<i data-lucide="volume-2"></i>'; } 
@@ -294,25 +303,22 @@ function openShadowModal(idx) {
 }
 function runWelcomeOverlay() {
     const overlay = document.getElementById('welcome-overlay'), msgEl = document.getElementById('welcome-message');
-    setTimeout(() => { msgEl.style.opacity = '1'; }, 500);
+    setTimeout(() => { msgEl.style.opacity = '1'; }, 500); 
     let minimumTimeElapsed = false; let dataFetched = false;
-    setTimeout(() => { minimumTimeElapsed = true; checkAndFade(); }, 3000);
+    setTimeout(() => { minimumTimeElapsed = true; checkAndFade(); }, 3000); 
     fetch(`${GAS_WEB_APP_URL}?id=${userId}`).then(res => res.json()).then(data => {
         portalData = data; dataFetched = true;
-        if(currentApp === 'vocabulary') renderContent();
         checkAndFade();
     });
     function checkAndFade() {
         if (minimumTimeElapsed && dataFetched) {
+            switchApp('vocabulary'); 
             overlay.style.opacity = '0';
             setTimeout(() => { overlay.style.display = 'none'; lucide.createIcons(); }, 600);
         }
     }
 }
-window.onload = () => { 
-    runWelcomeOverlay(); lucide.createIcons(); 
-    const f = document.getElementById('main-footer'); f.addEventListener('scroll', () => { document.getElementById('footer-arrow').style.display = (f.scrollLeft + f.clientWidth >= f.scrollWidth - 10) ? 'none' : 'flex'; });
-};
+window.onload = () => { runWelcomeOverlay(); lucide.createIcons(); };
 </script>
 </body>
 </html>
