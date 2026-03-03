@@ -47,12 +47,29 @@ body { font-family: 'Inter', -apple-system, sans-serif; -webkit-overflow-scrolli
 .flip-card-front { background: white; border: 1px solid #f1f5f9; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
 .flip-card-back { background: var(--kepty-light-green); border: 1px solid #d1fae5; transform: rotateY(180deg); }
 
+/* クイズ判定アイコン */
+.quiz-badge { position: absolute; top: 12px; right: 12px; width: 28px; height: 28px; border-radius: 50%; display: none; align-items: center; justify-content: center; color: white; z-index: 50; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+.quiz-badge.correct { background-color: #10b981; display: flex; }
+.quiz-badge.incorrect { background-color: #ef4444; display: flex; }
+
+.quiz-option-btn { position: relative; background: white; border: 2px solid #f1f5f9; transition: all 0.2s; text-align: left; padding: 16px; border-radius: 16px; font-weight: 700; font-size: 14px; width: 100%; display: block; -webkit-tap-highlight-color: transparent; }
+.quiz-option-btn:active { transform: scale(0.98) translateY(2px); }
+
+/* フッター */
+.portal-footer { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #f1f5f9; display: flex; justify-content: flex-start; overflow-x: auto; padding: 12px 0; z-index: 100; box-shadow: 0 -5px 15px rgba(0,0,0,0.03); scrollbar-width: none; }
+.footer-indicator { position: fixed; bottom: 22px; right: 0; z-index: 101; background: linear-gradient(to left, white 40%, transparent); color: var(--kepty-orange); width: 40px; height: 35px; display: flex; align-items: center; justify-content: center; animation: bounce-x 1.2s infinite; pointer-events: none; }
+@keyframes bounce-x { 0%, 100% { transform: translateX(0); opacity: 0.5; } 50% { transform: translateX(-5px); opacity: 1; } }
+
+.footer-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8; cursor: pointer; transition: 0.2s; flex-shrink: 0; width: 75px; }
+.footer-item.active { color: var(--kepty-orange); }
+.footer-item span { font-size: 7.5px; font-weight: 700; transform: translateY(-1px); margin-top: 2px; }
+
 /* 判定演出 */
 .good-label { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: 900; font-size: 2.2rem; opacity: 0; pointer-events: none; transition: all 0.3s; z-index: 50; color: #16a34a; text-shadow: 0 0 10px rgba(255,255,255,0.9); }
 .good-label.show { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
 
-/* 録音ボタン（Exam用：グレー固定・影なし） */
-.exam-mic-btn { width: 58px; height: 58px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #e2e8f0; color: #94a3b8; background: #f8fafc; cursor: pointer; position: relative; z-index: 20; box-shadow: none !important; }
+/* 録音ボタン（グレー固定） */
+.exam-mic-btn { width: 58px; height: 58px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #e2e8f0; color: #94a3b8; background: #f8fafc; cursor: pointer; position: relative; z-index: 20; }
 .record-btn { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1.5px solid var(--kepty-orange); color: var(--kepty-orange); cursor: pointer; transition: 0.2s; -webkit-tap-highlight-color: transparent; }
 .record-btn.recording { background-color: var(--kepty-orange) !important; color: white !important; animation: ph-pulse 1s infinite !important; }
 @keyframes ph-pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(206, 74, 34, 0.1); } 100% { transform: scale(1); } }
@@ -69,6 +86,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; -webkit-overflow-scrolli
 .progress-dot { width: 10px; height: 10px; border-radius: 2px; border: 1.5px solid #e2e8f0; background: white; transition: 0.3s; }
 .progress-dot.filled { background: var(--kepty-orange); border-color: var(--kepty-orange); }
 
+/* ボタン沈み込みアニメーション復活 */
 .nav-icon-btn:active, .next-btn-orange:active { transform: scale(0.92) translateY(2px) !important; }
 .next-btn-orange { background-color: var(--kepty-orange) !important; color: white !important; display: flex; align-items: center; justify-content: center; border-radius: 9999px; transition: transform 0.1s; cursor: pointer; position: relative; z-index: 20; }
 .restart-link { color: #94a3b8; font-size: 14px; font-weight: 700; border-bottom: 2px solid var(--kepty-orange); padding-bottom: 2px; cursor: pointer; transition: all 0.1s; display: inline-block; }
@@ -80,6 +98,9 @@ body { font-family: 'Inter', -apple-system, sans-serif; -webkit-overflow-scrolli
 .sp-rule-box { background: #f1f5f9; border-radius: 12px; padding: 12px 16px; margin-bottom: 16px; text-align: left; border: 1px solid #e2e8f0; }
 .sp-rule-badge { background: #475569; color: white; font-size: 9px; font-weight: 900; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-bottom: 8px; }
 .sp-rule-text { color: #1e293b; font-size: 13px; font-weight: 700; line-height: 1.6; }
+.review-item { text-align: left; padding: 12px; border-bottom: 1px solid #f1f5f9; font-size: 12px; }
+.review-item .q { font-weight: 900; color: #1e293b; margin-bottom: 4px; }
+.review-item .a { font-weight: 600; }
 </style>
 </head>
 <body class="bg-slate-50 text-slate-900 pb-24 text-center">
@@ -200,8 +221,7 @@ function renderContent() {
         else if (currentApp === 'topicTalk') { 
             if (examIdx >= filtered.length) { area.innerHTML = `<div class="kepty-card flex items-center justify-center"><p class="text-4xl font-black text-kepty-orange tracking-tight mb-8">Complete!</p><div class="mt-4"><span onclick="examIdx=0; renderContent();" class="restart-link">Restart</span></div></div>`; lucide.createIcons(); return; }
             const item = filtered[examIdx]; if(!item) return; 
-            // 修正②：中央寄せに戻す
-            area.innerHTML = generateProgressDotsHtml(filtered.length, examIdx) + `<div class="kepty-card flex-1 flex flex-col justify-between"><div class="mb-2"><span class="text-[10px] font-black text-kepty-orange uppercase bg-kepty-light-orange px-2 py-0.5 rounded-md">${item.theme}</span></div><p class="text-xl font-bold text-slate-800 mb-8 whitespace-pre-wrap text-center w-full">${item.training_topic}</p><div class="flex flex-col items-center gap-6 mt-6"><div class="voice-wave"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div><div class="flex items-center justify-center gap-6 w-full px-10"><button onclick="examIdx = Math.max(0, examIdx-1); renderContent();" class="nav-icon-btn p-4 bg-white/50 text-slate-400 rounded-full shadow-sm ${examIdx===0?'invisible':''} active:scale-95"><i data-lucide="chevron-left"></i></button><div class="exam-mic-btn w-16 h-16 shrink-0" onclick="toggleGenericRecord()"><i data-lucide="mic" class="w-8 h-8"></i></div><button onclick="topicTalkNext(${filtered.length})" class="nav-icon-btn p-4 next-btn-orange rounded-full shadow-lg active:scale-92"><i data-lucide="chevron-right"></i></button></div></div></div>`; 
+            area.innerHTML = generateProgressDotsHtml(filtered.length, examIdx) + `<div class="kepty-card flex-1 flex flex-col justify-between"><div class="mb-2"><span class="text-[10px] font-black text-kepty-orange uppercase bg-kepty-light-orange px-2 py-0.5 rounded-md">${item.theme}</span></div><p class="text-xl font-bold text-slate-800 mb-8 whitespace-pre-wrap text-center">${item.training_topic}</p><div class="flex flex-col items-center gap-6 mt-6"><div class="voice-wave"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div><div class="flex items-center justify-center gap-6 w-full px-10"><button onclick="examIdx = Math.max(0, examIdx-1); renderContent();" class="nav-icon-btn p-4 bg-white/50 text-slate-400 rounded-full shadow-sm ${examIdx===0?'invisible':''} active:scale-95"><i data-lucide="chevron-left"></i></button><div class="exam-mic-btn" onclick="toggleGenericRecord()"><i data-lucide="mic"></i></div><button onclick="topicTalkNext(${filtered.length})" class="nav-icon-btn p-4 next-btn-orange rounded-full shadow-lg"><i data-lucide="chevron-right"></i></button></div></div></div>`; 
         }
         else if (currentApp === 'reading') { 
             const item = filtered[0]; if (!item) return; 
@@ -210,14 +230,13 @@ function renderContent() {
         }
         else if (currentApp === 'speaking') { 
             const item = filtered[0]; if (!item) return; 
-            // 修正③：POINTボックスの余白短縮（py-2）と文頭空白削除（trim）
             area.innerHTML = `<div class="word-card p-5 shadow-sm text-left border border-slate-100 flex flex-col gap-4">
                     <h4 class="text-xl font-black text-slate-900 mb-0 tracking-tight">${item.point}</h4>
-                    <section class="bg-slate-100 px-4 py-2 rounded-[24px] border border-slate-200 text-sm font-medium text-slate-700 leading-snug text-left">
+                    <section class="bg-slate-100 px-4 py-3 rounded-[24px] border border-slate-200 text-sm font-medium text-slate-700 leading-normal text-left">
                         <div class="flex items-center gap-2 mb-2">
                             <span class="text-[10px] font-black bg-slate-700 text-white px-2 py-0.5 rounded tracking-widest uppercase">Point</span>
                         </div>
-                        <p class="whitespace-pre-line">${item.background.trim()}</p>
+                        ${item.background.trim()}
                     </section>
                     <div class="bg-slate-50 px-4 py-5 rounded-xl border border-slate-100 text-left">
                         <p class="text-[9px] font-black text-kepty-orange uppercase tracking-wider mb-2">Example Sentences</p>
@@ -228,8 +247,7 @@ function renderContent() {
         else if (currentApp === 'vocabulary') { 
             area.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">` + filtered.map(w => `<div class="flip-card-voc" onclick="this.classList.toggle('flipped')" ontouchstart=""><div class="flip-card-inner"><div class="flip-card-front" style="justify-content: flex-start; padding-top: 24px;"><div class="flex justify-between items-start mb-0.5"><span class="text-[9px] font-black text-kepty-orange uppercase tracking-wider">${w.pos}</span><button onclick="event.stopPropagation(); playTTS('${w.word.replace(/'/g, "\\'")}')" class="w-9 h-9 rounded-full bg-slate-50 text-slate-400 flex items-center justify-center -mt-2"><i data-lucide="volume-2" class="w-5 h-5"></i></button></div><h3 class="text-2xl font-black text-slate-900 mb-0.5 tracking-tight">${w.word}</h3><p class="text-slate-400 font-mono text-xs">${w.pronunciation}</p><div class="absolute bottom-2 right-2 text-slate-400 opacity-40"><i data-lucide="hand" class="w-4 h-4"></i></div></div><div class="flip-card-back"><h3 class="text-lg font-bold mb-2 text-slate-800">${w.meaning}</h3><div class="bg-black/5 p-3 rounded-xl text-[11px] italic text-slate-600 leading-relaxed overflow-y-auto max-h-[80px]">${w.example.replace(new RegExp(`(${w.word})`, 'gi'), '<strong>$1</strong>')}</div><div class="absolute bottom-2 right-2 text-slate-400 opacity-40"><i data-lucide="hand" class="w-4 h-4"></i></div></div></div></div>`).join('') + `</div>`; 
         }
-        // 修正①：Grammarの行間をコンパクトに（leading-tight）
-        else area.innerHTML = `<div class="word-card p-8 text-slate-700 text-left leading-tight whitespace-pre-line">${portalData.grammarManual[currentSubKey] || "No Explanation Prepared."}</div>`;
+        else area.innerHTML = `<div class="word-card p-8 text-slate-700 text-left leading-snug">${portalData.grammarManual[currentSubKey] || "No Explanation Prepared."}</div>`;
     } else renderExamStep(filtered);
     lucide.createIcons();
 }
@@ -249,12 +267,10 @@ function renderExamStep(pool) {
         area.innerHTML = generateProgressDotsHtml(pool.length, examIdx) + `<div class="mb-4 text-left ${examIdx===0?'invisible':''}"><button onclick="examIdx--; renderContent();" class="flex items-center gap-1 text-slate-400 font-bold text-xs"><i data-lucide="arrow-left" class="w-3 h-3"></i> Back</button></div><div class="text-center mb-8 px-2"><h2 class="text-xl md:text-2xl font-bold text-slate-900 tracking-tight leading-snug">${qTitle}</h2></div><div id="quiz-options-grid" class="grid grid-cols-1 gap-3 max-w-xl mx-auto">${ops.map(o => `<button onclick="handleExamAnswer('${qTitle.replace(/'/g, "\\'")}', '${o.replace(/'/g, "\\'")}', '${(currentApp==='vocabulary'?it.meaning:it.answer).replace(/'/g, "\\'")}', this)" class="quiz-option-btn text-left"><div class="quiz-badge"></div>${o}</button>`).join('')}</div>`;
     } else if (currentApp === 'chunk') { 
         const ex = pool[0][`exam_${currentExamNum}`];
-        area.innerHTML = generateProgressDotsHtml(30, examIdx) + `<p class="text-sm font-bold text-slate-700 mb-4 px-1 text-center">以下の日本語を英語に訳してください。</p><div class="kepty-card flex-1 flex flex-col justify-between"><div class="mt-1 mb-4 px-2 text-center flex-1 flex justify-center items-center"><p class="text-lg md:text-xl font-bold text-slate-800 leading-relaxed">${ex[examIdx] || "No Data"}</p></div><div class="voice-wave"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div><div class="flex items-center justify-center gap-6 mt-6 px-10"><button onclick="examIdx = Math.max(0, examIdx-1); renderContent();" class="nav-icon-btn p-4 bg-white/50 text-slate-400 rounded-full shadow-sm ${examIdx===0?'invisible':''} active:scale-95"><i data-lucide="chevron-left"></i></button><div class="exam-mic-btn w-16 h-16 shrink-0" onclick="toggleGenericRecord()"><i data-lucide="mic" class="w-8 h-8"></i></div><button onclick="examIdx++; renderContent();" class="nav-icon-btn p-4 next-btn-orange rounded-full shadow-lg active:scale-92"><i data-lucide="chevron-right"></i></button></div></div>`; 
+        area.innerHTML = generateProgressDotsHtml(30, examIdx) + `<p class="text-sm font-bold text-slate-700 mb-4 px-1 text-center">以下の日本語を英語に訳してください。</p><div class="kepty-card flex-1 flex flex-col justify-between"><div class="mt-1 mb-4 px-2 text-center flex-1 flex justify-center items-center"><p class="text-lg md:text-xl font-bold text-slate-800 leading-relaxed">${ex[examIdx] || "No Data"}</p></div><div class="voice-wave"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div><div class="flex items-center justify-center gap-6 mt-6 px-10"><button onclick="examIdx = Math.max(0, examIdx-1); renderContent();" class="nav-icon-btn p-4 bg-white/50 text-slate-400 rounded-full shadow-sm ${examIdx===0?'invisible':''} active:scale-95"><i data-lucide="chevron-left"></i></button><div class="exam-mic-btn" onclick="toggleGenericRecord()"><i data-lucide="mic"></i></div><button onclick="examIdx++; renderContent();" class="nav-icon-btn p-4 next-btn-orange rounded-full shadow-lg active:scale-95"><i data-lucide="chevron-right"></i></button></div></div>`; 
     }
     else if (currentApp === 'speaking' || currentApp === 'pronunciation') { 
-        const it = pool[examIdx]; 
-        // 修正：Speaking FormのExamマイクボタンをグレー・影なしに統一
-        area.innerHTML = generateProgressDotsHtml(pool.length, examIdx) + `<div class="kepty-card flex-1 flex flex-col justify-between">${currentApp==='speaking'?`<div class="sp-rule-box"><span class="sp-rule-badge">RULE</span><p class="sp-rule-text whitespace-pre-line leading-relaxed text-sm">${it.rules}</p></div>`:''}<div class="px-2 text-center mb-6 flex-1 flex justify-center items-center"><p class="text-lg md:text-xl font-bold text-slate-900 leading-relaxed tracking-tight text-left">${it.assignment || it.word}</p></div><div class="voice-wave"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div><div class="flex items-center justify-center gap-6 mt-6 px-10"><button onclick="examIdx = Math.max(0, examIdx-1); renderContent();" class="nav-icon-btn p-4 bg-white/50 text-slate-400 rounded-full shadow-sm ${examIdx===0?'invisible':''} active:scale-95"><i data-lucide="chevron-left"></i></button><div class="exam-mic-btn w-16 h-16 shrink-0" onclick="toggleGenericRecord()"><i data-lucide="mic" class="w-8 h-8"></i></div><button onclick="examIdx++; renderContent();" class="nav-icon-btn p-4 next-btn-orange rounded-full shadow-lg active:scale-92"><i data-lucide="chevron-right"></i></button></div></div>`; 
+        const it = pool[examIdx]; area.innerHTML = generateProgressDotsHtml(pool.length, examIdx) + `<div class="kepty-card flex-1 flex flex-col justify-between">${currentApp==='speaking'?`<div class="sp-rule-box"><span class="sp-rule-badge">RULE</span><p class="sp-rule-text whitespace-pre-line leading-relaxed text-sm">${it.rules}</p></div>`:''}<div class="px-2 text-center mb-6 flex-1 flex justify-center items-center"><p class="text-lg md:text-xl font-bold text-slate-900 leading-relaxed tracking-tight text-left">${it.assignment || it.word}</p></div><div class="voice-wave"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div><div class="flex items-center justify-center gap-6 mt-6 px-10"><button onclick="examIdx = Math.max(0, examIdx-1); renderContent();" class="nav-icon-btn p-4 bg-white/50 text-slate-400 rounded-full shadow-sm ${examIdx===0?'invisible':''} active:scale-95"><i data-lucide="chevron-left"></i></button><button onclick="toggleGenericRecord()" class="record-btn w-16 h-16 shrink-0 shadow-lg shadow-kepty-orange/20"><i data-lucide="mic" class="w-8 h-8"></i></button><button onclick="examIdx++; renderContent();" class="nav-icon-btn p-4 next-btn-orange rounded-full shadow-lg active:scale-95"><i data-lucide="chevron-right"></i></button></div></div>`; 
     }
     lucide.createIcons();
 }
@@ -313,10 +329,12 @@ function openShadowModal(idx) {
 function runWelcomeOverlay() {
     const overlay = document.getElementById('welcome-overlay'), msgEl = document.getElementById('welcome-message');
     setTimeout(() => { msgEl.style.opacity = '1'; }, 500); 
+    
     fetch(`${GAS_WEB_APP_URL}?id=${userId}`).then(res => res.json()).then(data => {
         portalData = data;
         if (overlay.style.display === 'none') { switchApp(currentApp); }
     });
+
     setTimeout(() => { 
         overlay.style.opacity = '0'; 
         setTimeout(() => { 
