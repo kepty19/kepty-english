@@ -138,7 +138,7 @@
 <script>
     lucide.createIcons();
 
-    // --- 円形グラフ ---
+    // 円形グラフ
     const ctxCircle = document.getElementById('circleChart').getContext('2d');
     const centerTextPlugin = {
         id: 'centerText',
@@ -147,8 +147,6 @@
             ctx.save();
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            
-            // 垂直方向・水平方向ともに「ど真ん中」へ調整
             const centerX = width / 2;
             const centerY = height / 2;
             
@@ -161,7 +159,6 @@
             ctx.fillStyle = 'rgba(255,255,255,0.6)';
             ctx.fillText('時間', centerX - 28, centerY + 27);
             ctx.fillText('分', centerX + 32, centerY + 27);
-            
             ctx.restore();
         }
     };
@@ -185,7 +182,7 @@
         plugins: [centerTextPlugin]
     });
 
-    // --- 棒グラフ ---
+    // 棒グラフ
     const ctxBar = document.getElementById('barChart').getContext('2d');
     const actualData = [40, 30, 60, 55, 45, 20, 10];
     const targetData = [60, 60, 60, 60, 60, 60, 60];
