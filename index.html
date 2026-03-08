@@ -125,7 +125,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; -webkit-overflow-scrolli
     <div onclick="switchApp('chunk')" id="nav-chunk" class="footer-item"><i data-lucide="layers"></i><span>Sentence Building</span></div>
 </footer>
 <div id="detail-modal" onclick="this.style.display='none'"><div class="modal-content" onclick="event.stopPropagation()"><div class="flex items-center"><div id="modal-bar" class="w-1 self-stretch rounded-full mr-4"></div><div class="flex-1 text-left"><div class="flex items-center gap-3 mb-1"><span id="modal-title-text" class="text-[10px] font-black uppercase tracking-wider"></span><div class="w-px h-3 bg-slate-200"></div><span id="modal-target" class="text-sm font-bold text-slate-800"></span></div><div id="modal-desc" class="text-sm text-slate-700 font-medium leading-relaxed"></div></div></div></div></div>
-<audio id="global-player" class="hidden"></audio>
+<audio id="global-player"></audio>
 <script>
 const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwXjpU2jbuvLoLRIW5xqMZJTe728VOylyGBAP192o27Y1CJisC6vb6dOmO94a7lKjvA/exec";
 const urlParams = new URLSearchParams(window.location.search);
@@ -270,7 +270,7 @@ function renderExamStep(pool) {
         area.innerHTML = generateProgressDotsHtml(30, examIdx) + `<p class="text-sm font-bold text-slate-700 mb-4 px-1 text-center">以下の日本語を英語に訳してください。</p><div class="kepty-card flex-1 flex flex-col justify-between"><div class="mt-1 mb-4 px-2 text-center flex-1 flex justify-center items-center"><p class="text-lg md:text-xl font-bold text-slate-800 leading-relaxed">${ex[examIdx] || "No Data"}</p></div><div class="voice-wave"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div><div class="flex items-center justify-center gap-6 mt-6 px-10"><button onclick="examIdx = Math.max(0, examIdx-1); renderContent();" class="nav-icon-btn p-4 bg-white/50 text-slate-400 rounded-full shadow-sm ${examIdx===0?'invisible':''} active:scale-95"><i data-lucide="chevron-left"></i></button><div class="exam-mic-btn" onclick="toggleGenericRecord()"><i data-lucide="mic"></i></div><button onclick="examIdx++; renderContent();" class="nav-icon-btn p-4 next-btn-orange rounded-full shadow-lg active:scale-95"><i data-lucide="chevron-right"></i></button></div></div>`; 
     }
     else if (currentApp === 'speaking' || currentApp === 'pronunciation') { 
-        const it = pool[examIdx]; area.innerHTML = generateProgressDotsHtml(pool.length, examIdx) + `<div class="kepty-card flex-1 flex flex-col justify-between">${currentApp==='speaking'?`<div class="sp-rule-box"><span class="sp-rule-badge">RULE</span><p class="sp-rule-text whitespace-pre-line leading-relaxed text-sm">${it.rules}</p></div>`:''}<div class="px-2 text-center mb-6 flex-1 flex justify-center items-center"><p class="text-lg md:text-xl font-bold text-slate-900 leading-relaxed tracking-tight text-left">${it.assignment || it.word}</p></div><div class="voice-wave"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div><div class="flex items-center justify-center gap-6 mt-6 px-10"><button onclick="examIdx = Math.max(0, examIdx-1); renderContent();" class="nav-icon-btn p-4 bg-white/50 text-slate-400 rounded-full shadow-sm ${examIdx===0?'invisible':''} active:scale-95"><i data-lucide="chevron-left"></i></button><button onclick="toggleGenericRecord()" class="record-btn w-16 h-16 shrink-0 shadow-lg shadow-kepty-orange/20"><i data-lucide="mic" class="w-8 h-8"></i></button><button onclick="examIdx++; renderContent();" class="nav-icon-btn p-4 next-btn-orange rounded-full shadow-lg active:scale-95"><i data-lucide="chevron-right"></i></button></div></div>`; 
+        const it = pool[examIdx]; area.innerHTML = generateProgressDotsHtml(pool.length, examIdx) + `<div class="kepty-card flex-1 flex flex-col justify-between">${currentApp==='speaking'?`<div class="sp-rule-box"><span class="sp-rule-badge">RULE</span><p class="sp-rule-text whitespace-pre-line leading-relaxed text-sm">${it.rules}</p></div>`:''}<div class="px-2 text-center mb-6 flex-1 flex justify-center items-center"><p class="text-lg md:text-xl font-bold text-slate-900 leading-relaxed tracking-tight text-left">${it.assignment || it.word}</p></div><div class="voice-wave"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div><div class="flex items-center justify-center gap-6 mt-6 px-10"><button onclick="examIdx = Math.max(0, examIdx-1); renderContent();" class="nav-icon-btn p-4 bg-white/50 text-slate-400 rounded-full shadow-sm ${examIdx===0?'invisible':''} active:scale-95"><i data-lucide="chevron-left"></i></button><div class="exam-mic-btn" onclick="toggleGenericRecord()"><i data-lucide="mic"></i></div><button onclick="examIdx++; renderContent();" class="nav-icon-btn p-4 next-btn-orange rounded-full shadow-lg active:scale-95"><i data-lucide="chevron-right"></i></button></div></div>`; 
     }
     lucide.createIcons();
 }
@@ -308,10 +308,12 @@ function toggleRecord(id) {
 }
 function updatePhProgress(cat) { const f = portalData.pronunciation.filter(d => (d.category || d.lesson) === cat); document.getElementById('ph-progress-dots').innerHTML = Array.from({length: f.length}).map((_, i) => `<div class="progress-dot ${phCompletedIds.has(cat + '-' + i) ? 'filled' : ''}"></div>`).join(''); }
 function playAudio(d, b) { 
-    const p = document.getElementById('global-player'), s = "https://docs.google.com/uc?export=download&id=" + d.trim(); 
-    if (currentAudioUrl === s && !p.paused) { p.pause(); b.innerHTML = '<i data-lucide="volume-2"></i>'; } 
-    else { if (currentAudioUrl !== s) { p.src = s; currentAudioUrl = s; } p.play(); b.innerHTML = '<i data-lucide="pause"></i>'; } 
-    p.onended = () => { b.innerHTML = '<i data-lucide="volume-2"></i>'; lucide.createIcons(); }; 
+    // For proof of concept, always use local audio file
+    const p = document.getElementById('global-player');
+    const s = 'content/audiosamplekepty.m4a';
+    if (currentAudioUrl === s && !p.paused) { p.pause(); b.innerHTML = '<i data-lucide="volume-2"></i>'; }
+    else { if (currentAudioUrl !== s) { p.src = s; currentAudioUrl = s; } p.play(); b.innerHTML = '<i data-lucide="pause"></i>'; }
+    p.onended = () => { b.innerHTML = '<i data-lucide="volume-2"></i>'; lucide.createIcons(); };
     lucide.createIcons();
 }
 function playTTS(text) { window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = 'en-US'; u.rate = 0.9; window.speechSynthesis.speak(u); }
@@ -330,19 +332,18 @@ function runWelcomeOverlay() {
     const overlay = document.getElementById('welcome-overlay'), msgEl = document.getElementById('welcome-message');
     setTimeout(() => { msgEl.style.opacity = '1'; }, 500); 
     
-    fetch(`${GAS_WEB_APP_URL}?id=${userId}`).then(res => res.json()).then(data => {
+    // Use the initial fetch that was already started at page load
+    const minDisplayTime = new Promise(resolve => setTimeout(resolve, 3000));
+    
+    Promise.all([initialFetch, minDisplayTime]).then(([data]) => {
         portalData = data;
-        if (overlay.style.display === 'none') { switchApp(currentApp); }
-    });
-
-    setTimeout(() => { 
         overlay.style.opacity = '0'; 
         setTimeout(() => { 
             overlay.style.display = 'none'; 
             switchApp('vocabulary'); 
             lucide.createIcons();
-        }, 600); 
-    }, 3000); 
+        }, 600);
+    });
 }
 
 window.onload = () => { 
@@ -354,3 +355,5 @@ window.onload = () => {
 </script>
 </body>
 </html>
+
+
