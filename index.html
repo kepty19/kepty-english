@@ -184,8 +184,9 @@ function renderThemes() {
     themeMenu.classList.remove('hidden'); themeList.innerHTML = themes.map(t => `<div onclick="selectTheme('${t}')" class="theme-item ${currentTheme === t ? 'active' : ''}">${currentApp==='shadowing'?'#'+t:t}</div>`).join('');
     renderContent();
 }
-function selectSubKey(key) { currentSubKey = key; currentTheme = ""; examIdx = 0; examResults = []; shadowingMode = 'front'; renderCategories(); }
-function selectTheme(themeName) { currentTheme = themeName; shadowingMode = 'front'; renderThemes(); }
+function selectSubKey(key) { currentSubKey = key; currentTheme = ""; examIdx = 0; examResults = []; shadowingMode = 'front'; stopAudio(); renderCategories(); }
+function selectTheme(themeName) { currentTheme = themeName; shadowingMode = 'front'; stopAudio(); renderThemes(); }
+function stopAudio() { const p = document.getElementById('global-player'); p.pause(); p.currentTime = 0; currentAudioIdx = null; currentAudioTime = 0; }
 function generateProgressDotsHtml(total, current) {
     let rows = Math.ceil(total / 10), html = `<div class="flex flex-col items-center gap-1.5 mb-6">`;
     for(let r=0; r<rows; r++) { html += `<div class="flex gap-1.5">`; for(let i=0; i<10; i++) { let idx = r * 10 + i; if(idx < total) html += `<div class="progress-dot ${idx < current ? 'filled' : ''}"></div>`; } html += `</div>`; }
@@ -307,15 +308,51 @@ function toggleRecord(id) {
     else { btn.classList.remove('recording'); toggleGenericRecord(); card.classList.add('card-judging'); setTimeout(() => { phCompletedIds.add(id); card.classList.add('success-mode'); lbl.classList.add('show'); setTimeout(() => { lbl.classList.remove('show'); card.classList.remove('card-judging'); renderContent(); }, 1500); }, 300); }
 }
 function updatePhProgress(cat) { const f = portalData.pronunciation.filter(d => (d.category || d.lesson) === cat); document.getElementById('ph-progress-dots').innerHTML = Array.from({length: f.length}).map((_, i) => `<div class="progress-dot ${phCompletedIds.has(cat + '-' + i) ? 'filled' : ''}"></div>`).join(''); }
-function playAudio(d, b) { 
-    // For proof of concept, always use local audio file
-    const p = document.getElementById('global-player');
-    const s = 'content/audiosamplekepty.m4a';
-    if (currentAudioUrl === s && !p.paused) { p.pause(); b.innerHTML = '<i data-lucide="volume-2"></i>'; }
-    else { if (currentAudioUrl !== s) { p.src = s; currentAudioUrl = s; } p.play(); b.innerHTML = '<i data-lucide="pause"></i>'; }
-    p.onended = () => { b.innerHTML = '<i data-lucide="volume-2"></i>'; lucide.createIcons(); };
+// Shadowing audio: pause/resume for same, restart for different
+let currentAudioIdx = null;
+let currentAudioUrlLink = "";
+let currentAudioTime = 0;
+function playAudio(audioId, btn) {
+    const player = document.getElementById('global-player');
+    // 音源URL取得（audioIdからURL生成、または既存ロジック）
+    let audioUrl = '';
+    if (portalData && portalData.shadowing) {
+        const item = portalData.shadowing.find(d => d.theme === currentTheme && d.lesson === currentSubKey);
+        if (item && item.audioUrl) audioUrl = item.audioUrl;
+    }
+    // Fallback: local sample
+    if (!audioUrl) audioUrl = 'content/audiosamplekepty.m4a';
+    // 異なる番号の場合
+    if (currentAudioIdx !== audioId) {
+        // Stop any currently playing audio
+        player.pause();
+        player.currentTime = 0;
+        player.src = audioUrl;
+        currentAudioIdx = audioId;
+        currentAudioUrl = audioUrl;
+        currentAudioTime = 0;
+        player.play();
+        btn.innerHTML = '<i data-lucide="pause"></i>';
+    } else {
+        // 同じ番号の場合
+        if (!player.paused) {
+            currentAudioTime = player.currentTime;
+            player.pause();
+            btn.innerHTML = '<i data-lucide="volume-2"></i>';
+        } else {
+            player.currentTime = currentAudioTime;
+            player.play();
+            btn.innerHTML = '<i data-lucide="pause"></i>';
+        }
+    }
+    player.onended = () => {
+        btn.innerHTML = '<i data-lucide="volume-2"></i>';
+        lucide.createIcons();
+        currentAudioTime = 0;
+    };
     lucide.createIcons();
 }
+
 function playTTS(text) { window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = 'en-US'; u.rate = 0.9; window.speechSynthesis.speak(u); }
 function generateHighlightedHtml(text, hls) { if (!hls || hls.length === 0) return text; let html = text; hls.forEach((hl, idx) => { const regex = new RegExp(`(${hl.target})`, 'g'); html = html.replace(regex, `<span class="hl-overlay" onclick="openShadowModal(${idx})" style="text-decoration: underline; text-decoration-color: ${HL_COLORS[hl.type]}; text-underline-offset: 4px; cursor: pointer;">$1</span>`); }); return html; }
 function openShadowModal(idx) {
