@@ -184,8 +184,9 @@ function renderThemes() {
     themeMenu.classList.remove('hidden'); themeList.innerHTML = themes.map(t => `<div onclick="selectTheme('${t}')" class="theme-item ${currentTheme === t ? 'active' : ''}">${currentApp==='shadowing'?'#'+t:t}</div>`).join('');
     renderContent();
 }
-function selectSubKey(key) { currentSubKey = key; currentTheme = ""; examIdx = 0; examResults = []; shadowingMode = 'front'; renderCategories(); }
-function selectTheme(themeName) { currentTheme = themeName; shadowingMode = 'front'; renderThemes(); }
+function selectSubKey(key) { currentSubKey = key; currentTheme = ""; examIdx = 0; examResults = []; shadowingMode = 'front'; stopAudio(); renderCategories(); }
+function selectTheme(themeName) { currentTheme = themeName; shadowingMode = 'front'; stopAudio(); renderThemes(); }
+function stopAudio() { const p = document.getElementById('global-player'); p.pause(); p.currentTime = 0; currentAudioIdx = null; currentAudioTime = 0; }
 function generateProgressDotsHtml(total, current) {
     let rows = Math.ceil(total / 10), html = `<div class="flex flex-col items-center gap-1.5 mb-6">`;
     for(let r=0; r<rows; r++) { html += `<div class="flex gap-1.5">`; for(let i=0; i<10; i++) { let idx = r * 10 + i; if(idx < total) html += `<div class="progress-dot ${idx < current ? 'filled' : ''}"></div>`; } html += `</div>`; }
@@ -323,11 +324,13 @@ function playAudio(audioId, btn) {
     if (!audioUrl) audioUrl = 'content/audiosamplekepty.m4a';
     // 異なる番号の場合
     if (currentAudioIdx !== audioId) {
+        // Stop any currently playing audio
+        player.pause();
+        player.currentTime = 0;
         player.src = audioUrl;
         currentAudioIdx = audioId;
         currentAudioUrl = audioUrl;
         currentAudioTime = 0;
-        player.currentTime = 0;
         player.play();
         btn.innerHTML = '<i data-lucide="pause"></i>';
     } else {
