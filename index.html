@@ -80,7 +80,6 @@
                     <div class="menu-icon-box active-bg"><i data-lucide="graduation-cap"></i></div>
                     <div class="flex flex-col">
                         <span class="text-sm font-black text-slate-800">各種トレーニング</span>
-                        <span class="text-[9px] text-slate-400 font-bold uppercase">App Main</span>
                     </div>
                 </a>
 
@@ -88,7 +87,6 @@
                     <div class="menu-icon-box"><i data-lucide="bar-chart-3"></i></div>
                     <div class="flex flex-col">
                         <span class="text-sm font-black text-slate-800">学習管理</span>
-                        <span class="text-[9px] text-slate-400 font-bold uppercase">Dashboard / Logs</span>
                     </div>
                 </a>
 
@@ -96,7 +94,6 @@
                     <div class="menu-icon-box"><i data-lucide="compass"></i></div>
                     <div class="flex flex-col">
                         <span class="text-sm font-black text-slate-800">学習方針</span>
-                        <span class="text-[9px] text-slate-400 font-bold uppercase">Strategy</span>
                     </div>
                 </a>
 
@@ -104,7 +101,6 @@
                     <div class="menu-icon-box"><i data-lucide="shirt"></i></div>
                     <div class="flex flex-col">
                         <span class="text-sm font-black text-slate-800">ドレッシングルーム</span>
-                        <span class="text-[9px] text-slate-400 font-bold uppercase">Dressing Room</span>
                     </div>
                 </a>
 
@@ -112,7 +108,6 @@
                     <div class="menu-icon-box"><i data-lucide="settings"></i></div>
                     <div class="flex flex-col">
                         <span class="text-sm font-black text-slate-800">音声管理</span>
-                        <span class="text-[9px] text-slate-400 font-bold uppercase">Audio Admin</span>
                     </div>
                 </a>
             </div>
@@ -124,16 +119,20 @@
     function toggleSideMenu(isOpen) {
     const menu = document.getElementById('side-menu-content');
     const overlay = document.getElementById('side-menu-overlay');
+    const trigger = document.querySelector('.menu-pill-trigger');
     if (isOpen) {
         menu.classList.add('open');
         overlay.classList.remove('hidden');
+        if (trigger) trigger.classList.add('hidden');
     } else {
         menu.classList.remove('open');
         overlay.classList.add('hidden');
+        if (trigger) trigger.classList.remove('hidden');
     }
 }
 document.addEventListener('DOMContentLoaded', () => lucide.createIcons());
 </script>
 </html>
+
 
 
