@@ -1,0 +1,645 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kepty Dashboard - Learning Stats</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="study-tracker.js" defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --kepty-orange: #CE4A22;
+            --kepty-mid-orange: #FAC3B1;
+            --kepty-dark: #1e293b;
+        }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: radial-gradient(circle at 50% 50%, #FF6B3D 0%, #CE4A22 45%, #2A0B02 100%);
+            min-height: 100vh;
+            color: white;
+            padding: 20px;
+            margin: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+        .dashboard-container { max-width: 800px; margin: 0 auto; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            position: relative;
+        }
+        .chart-container { position: relative; width: 100% !important; height: 220px !important; }
+        .text-sharp { letter-spacing: -0.02em; }
+        
+        .stat-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; opacity: 0.7; white-space: nowrap; }
+        .compare-label-accent {
+            font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em;
+            color: rgba(255, 255, 255, 0.8);
+            border-bottom: 2px solid var(--kepty-orange); 
+            padding-bottom: 4px; margin-bottom: 12px; display: inline-block;
+        }
+        .stat-value { font-size: 1.4rem; font-weight: 700; line-height: 1.1; white-space: nowrap; }
+        .stat-unit { font-size: 10px; font-weight: 600; opacity: 0.5; margin-left: 2px; }
+
+        .help-btn {
+            position: absolute; top: 12px; right: 12px;
+            width: 20px; height: 20px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 50%; background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.4); cursor: pointer; transition: 0.2s;
+        }
+        .help-btn:active { transform: scale(0.9); background: rgba(255,255,255,0.2); }
+
+        /* モーダル */
+        #help-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(8px);
+            display: none; align-items: center; justify-content: center; z-index: 9999; padding: 20px;
+        }
+        .modal-content {
+            background: #ffffff;
+            border-radius: 24px; padding: 28px; width: 100%; max-width: 400px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            color: var(--kepty-dark);
+        }
+
+        /* 修正：閉じるボタンをハッキリとしたオレンジに固定 */
+        .modal-close-btn {
+            background-color:#CE4A22 !important; /* 明示的なKeptyオレンジ */
+            color: #ffffff !important;           /* 明示的な白文字 */
+            box-shadow: 0 10px 25px -5px rgba(206, 74, 34, 0.4);
+        }
+
+        @media (min-width: 768px) {
+            .stat-label { font-size: 13px; }
+            .compare-label-accent { font-size: 14px; }
+            .stat-value { font-size: 2rem; }
+            .stat-unit { font-size: 12px; }
+        }
+    </style>
+<style>
+    .menu-pill-trigger { position:fixed;top:20px;right:20px;width:50px;height:27px;background-color:#CE4A22;border-radius:999px;display:flex;align-items:center;justify-content:center;z-index:5500;cursor:pointer;box-shadow:0 4px 12px rgba(15,23,42,.16);transition:transform .2s; }
+    .menu-pill-trigger:active { transform:scale(.9); }
+    .pill-icon { width:21px;display:flex;flex-direction:column;gap:3px; }
+    .pill-line { display:flex;align-items:center;gap:2px;height:2px; }
+    .pill-line .line { height:2px;background:white;border-radius:10px;flex-grow:1; }
+    .pill-line .dot { width:2px;height:2px;background:white;border-radius:50%; }
+    .pill-line.top .line { width:14px; }
+    .pill-line.bot .line { width:14px;order:-1; }
+    .side-menu-item-link { display:flex;align-items:center;gap:14px;padding:12px;border-radius:18px;transition:.2s;text-decoration:none; }
+    .side-menu-item-link:hover { background:#f8fafc; }
+    .side-menu-icon-box { width:40px;height:40px;border-radius:12px;background:#FFEDE8;display:flex;align-items:center;justify-content:center;color:#CE4A22; }
+    .side-menu-icon-box.active-bg { background:#CE4A22;color:white; }
+    #side-menu-content.open { right:0; }
+</style>
+</head>
+<body>
+<div class="menu-pill-trigger" onclick="toggleSideMenu(true)"><div class="pill-icon"><div class="pill-line top"><span class="dot"></span><span class="line"></span></div><div class="pill-line mid"><span class="line"></span></div><div class="pill-line bot"><span class="line"></span><span class="dot"></span></div></div></div>
+<div id="side-menu-overlay" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[5000] hidden" onclick="toggleSideMenu(false)"></div>
+<nav id="side-menu-content" class="fixed top-0 right-[-280px] w-[280px] h-full bg-white z-[5001] transition-all duration-300 shadow-2xl p-6 flex flex-col"><div class="flex justify-between items-center mb-10"><div class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-l-2 border-slate-500 pl-3">Menu</div><button onclick="toggleSideMenu(false)" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-50 text-slate-400"><i data-lucide="x" class="w-5 h-5"></i></button></div><div class="space-y-3"><a href="main.html" class="side-menu-item-link"><div class="side-menu-icon-box"><i data-lucide="graduation-cap"></i></div><div class="flex flex-col"><span class="text-sm font-black text-slate-800">各種トレーニング</span></div></a><a href="dashboard.html" class="side-menu-item-link"><div class="side-menu-icon-box"><i data-lucide="bar-chart-3"></i></div><div class="flex flex-col"><span class="text-sm font-black text-slate-800">学習管理</span></div></a><a href="learning-direction.html" class="side-menu-item-link"><div class="side-menu-icon-box"><i data-lucide="compass"></i></div><div class="flex flex-col"><span class="text-sm font-black text-slate-800">学習方針</span></div></a><a href="dressing-room.html" class="side-menu-item-link"><div class="side-menu-icon-box"><i data-lucide="shirt"></i></div><div class="flex flex-col"><span class="text-sm font-black text-slate-800">ドレッシングルーム</span></div></a><a href="admin-audio.html" class="side-menu-item-link"><div class="side-menu-icon-box"><i data-lucide="settings"></i></div><div class="flex flex-col"><span class="text-sm font-black text-slate-800">音声管理</span></div></a></div></nav>
+
+<div class="dashboard-container">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+        <div class="flex flex-col">
+            <div class="flex items-center gap-2 mb-6">
+                <div class="w-2 h-6 bg-white rounded-full"></div>
+                <h2 class="text-lg font-bold tracking-tight">今週の学習時間</h2>
+            </div>
+            <div class="chart-container flex items-center justify-center">
+                <canvas id="circleChart"></canvas>
+            </div>
+        </div>
+        <div class="flex flex-col">
+            <div class="flex items-center gap-2 mb-4">
+                <div class="w-2 h-6 bg-[#FAC3B1] rounded-full"></div>
+                <h2 class="text-lg font-bold tracking-tight text-sharp">現在の進捗</h2>
+            </div>
+            <div class="flex justify-center gap-6 mb-6 text-sharp">
+                <div class="flex flex-col items-center">
+                    <span class="text-[10px] font-bold opacity-60 uppercase mb-1">今週の目標</span>
+                    <div class="flex items-baseline">
+                        <span id="weekly-target-hours" class="text-2xl font-bold">00</span><span class="text-xs opacity-60 ml-0.5 mr-1.5">時間</span>
+                        <span id="weekly-target-minutes" class="text-2xl font-bold">00</span><span class="text-xs opacity-60 ml-0.5">分</span>
+                    </div>
+                </div>
+                <div class="flex flex-col items-center border-l border-white/10 pl-6">
+                    <span class="text-[10px] font-bold opacity-60 uppercase mb-1">今週の総学習時間</span>
+                    <div class="flex items-baseline text-white">
+                        <span id="weekly-total-hours" class="text-2xl font-bold">00</span><span class="text-xs opacity-60 ml-0.5 mr-1.5">時間</span>
+                        <span id="weekly-total-minutes" class="text-2xl font-bold">00</span><span class="text-xs opacity-60 ml-0.5">分</span>
+                    </div>
+                </div>
+            </div>
+            <div class="relative h-[160px] w-full bg-white/5 rounded-2xl p-4">
+                <div class="absolute right-3 top-3 text-[10px] font-bold opacity-50">(分)</div>
+                <canvas id="barChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-10">
+        <div class="flex items-center gap-2 mb-5">
+            <div class="w-2 h-6 bg-[#FAC3B1] rounded-full opacity-60"></div>
+            <h2 class="text-lg font-bold tracking-tight text-sharp">比較</h2>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+            <div class="glass-card p-6 flex flex-col items-center justify-center">
+                <div onclick="openHelp('savings')" class="help-btn"><i data-lucide="help-circle" class="w-3.5 h-3.5"></i></div>
+                <div class="compare-label-accent">進捗貯金</div>
+                <div class="flex items-center text-sharp">
+                    <i id="surplus-icon" data-lucide="trending-up" class="w-5 h-5 text-emerald-400 mr-2"></i>
+                    <span id="surplus-value" class="text-2xl font-bold text-white">+0</span><span class="stat-unit">分</span>
+                </div>
+            </div>
+            <div class="glass-card p-6 flex flex-col items-center justify-center">
+                <div onclick="openHelp('forecast')" class="help-btn"><i data-lucide="help-circle" class="w-3.5 h-3.5"></i></div>
+                <div class="compare-label-accent">着地予測</div>
+                <div class="flex items-center text-sharp">
+                    <i id="projection-icon" data-lucide="trending-up" class="w-5 h-5 text-emerald-400 mr-2"></i>
+                    <span id="projection-value" class="text-2xl font-bold text-white">+0</span><span class="stat-unit">分</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="pb-10">
+        <div class="flex items-center gap-2 mb-5">
+            <div class="w-2 h-6 bg-white/40 rounded-full"></div>
+            <h2 class="text-lg font-bold tracking-tight text-white/90 text-sharp">累計</h2>
+        </div>
+        <div class="grid grid-cols-3 gap-2 md:gap-4">
+            <div class="glass-card p-3 md:p-6 flex flex-col items-center justify-center overflow-hidden text-center">
+                <div class="flex items-center gap-1.5 mb-4"><i data-lucide="clock" class="w-3 h-3 opacity-70 shrink-0"></i><span class="stat-label">総学習時間</span></div>
+                <div class="flex items-baseline text-sharp"><span id="lifetime-total-hours" class="stat-value">0</span><span class="stat-unit">時間</span></div><div class="h-4"></div>
+            </div>
+            <div class="glass-card p-3 md:p-6 flex flex-col items-center justify-center overflow-hidden text-center">
+                <div class="flex items-center gap-1.5 mb-4"><i data-lucide="calendar-check" class="w-3 h-3 opacity-70 shrink-0"></i><span class="stat-label">総学習日数</span></div>
+                <div class="flex items-baseline text-sharp"><span id="total-study-days" class="stat-value">0</span><span class="stat-unit">日</span></div><div class="h-4"></div>
+            </div>
+            <div class="glass-card p-3 md:p-6 flex flex-col items-center justify-center overflow-hidden text-center">
+                <div class="flex items-center gap-1.5 mb-4"><i data-lucide="calendar" class="w-3.5 h-3.5 opacity-70 shrink-0"></i><span class="stat-label">連続学習日数</span></div>
+                <div class="flex items-baseline text-sharp"><span id="streak-days" class="stat-value">0</span><span class="stat-unit">日</span></div><p id="best-streak-label" class="text-[8px] md:text-[10px] font-bold opacity-40 mt-2 whitespace-nowrap text-sharp">自己ベスト:0日</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="help-modal" onclick="closeHelp()">
+    <div class="modal-content text-left" onclick="event.stopPropagation()">
+        <h3 id="modal-title" class="text-xl font-black text-[#CE4A22] mb-5 tracking-tighter"></h3>
+        <div class="space-y-6">
+            <section>
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">1. 定義</p>
+                <p id="modal-def" class="text-sm font-semibold leading-relaxed text-slate-700"></p>
+            </section>
+            <section>
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">2. 数式</p>
+                <div class="bg-slate-50 border border-slate-100 p-3 rounded-xl font-mono text-[11px] text-[#CE4A22]" id="modal-formula"></div>
+            </section>
+            <section>
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">3. 捉え方</p>
+                <div id="modal-interpretation" class="space-y-4"></div>
+            </section>
+        </div>
+        <button onclick="closeHelp()" class="modal-close-btn mt-8 w-full py-4 font-bold rounded-full text-xs active:scale-95 transition">閉じる</button>
+    </div>
+</div>
+
+<script>
+    const DASHBOARD_DATA_DIR = 'dashboard_data';
+    const WEEKDAY_LABELS_JA = ['月', '火', '水', '木', '金', '土', '日'];
+    let circleChart = null;
+    let barChart = null;
+    let circleCenterTime = { hours: '00', minutes: '00' };
+
+    const helpContent = {
+        savings: {
+            title: "進捗貯金",
+            def: "現時点において、1日あたりの目標ペースに対してどれだけリードしているか、または遅れているかを示します。",
+            formula: "今週総時間 - (週目標 × 経過日数 / 7)",
+            interpretation: [
+                { type: "plus", label: "プラスの場合", text: "目標ペースを上回っています。このまま「貯金」を維持しましょう！" },
+                { type: "minus", label: "マイナスの場合", text: "目標に遅れ（借金）が出ています。今日・明日での巻き返しが必要です。" }
+            ]
+        },
+        forecast: {
+            title: "着地予測",
+            def: "今週の平均ペースを日曜夜まで継続した場合、最終的に目標を何分超過（または不足）して着地するかを予測します。",
+            formula: "(今週総時間 / 経過日数 × 7) - 週目標",
+            interpretation: [
+                { type: "plus", label: "プラスの場合", text: "今のトレンドは非常に順調です。目標達成以上の成果が期待できます！" },
+                { type: "minus", label: "マイナスの場合", text: "今のペースだと未達の恐れがあります。今すぐペースアップを検討しましょう。" }
+            ]
+        }
+    };
+
+    function openHelp(key) {
+        const data = helpContent[key];
+        document.getElementById('modal-title').innerText = data.title;
+        document.getElementById('modal-def').innerText = data.def;
+        document.getElementById('modal-formula').innerText = data.formula;
+        let interpHtml = "";
+        data.interpretation.forEach(item => {
+            interpHtml += `<div><span class="text-[10px] font-black px-1.5 py-1 rounded ${item.type==='plus'?'bg-emerald-50 text-emerald-600':'bg-rose-50 text-rose-600'}">${item.label}</span><p class="text-xs mt-2 font-medium text-slate-600">${item.text}</p></div>`;
+        });
+        document.getElementById('modal-interpretation').innerHTML = interpHtml;
+        document.getElementById('help-modal').style.display = 'flex';
+    }
+
+    function closeHelp() {
+        document.getElementById('help-modal').style.display = 'none';
+    }
+
+    function getUrlUserId() {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('id');
+    }
+
+    function resolveUserId() {
+        const idFromUrl = (getUrlUserId() || '').trim();
+        if (idFromUrl) {
+            localStorage.setItem('keptyUserId', idFromUrl);
+            return idFromUrl;
+        }
+        return (localStorage.getItem('keptyUserId') || 'tomohiro.19').trim() || 'tomohiro.19';
+    }
+
+    function mondayStart(date) {
+        const d = new Date(date);
+        const day = d.getDay();
+        const diff = day === 0 ? -6 : 1 - day;
+        d.setDate(d.getDate() + diff);
+        d.setHours(0, 0, 0, 0);
+        return d;
+    }
+
+    function dateKey(date) {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const d = String(date.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+    }
+
+    function splitHoursMinutes(totalMinutes) {
+        const safe = Math.max(0, Math.round(totalMinutes));
+        return {
+            hours: String(Math.floor(safe / 60)).padStart(2, '0'),
+            minutes: String(safe % 60).padStart(2, '0')
+        };
+    }
+
+    function signedMinutesText(minutes) {
+        const rounded = Math.round(minutes);
+        const sign = rounded > 0 ? '+' : '';
+        return `${sign}${rounded}`;
+    }
+
+    function getElapsedCompletedDaysSinceMonday(now) {
+        const jsDay = now.getDay();
+        if (jsDay === 0) {
+            return 6;
+        }
+        return jsDay - 1;
+    }
+
+    function getDayActivityMinutesForCurrentWeek(dayActivityMs, now) {
+        const start = mondayStart(now);
+        const values = [0, 0, 0, 0, 0, 0, 0];
+        for (let i = 0; i < 7; i++) {
+            const d = new Date(start);
+            d.setDate(start.getDate() + i);
+            const key = dateKey(d);
+            values[i] = Math.round((dayActivityMs[key] || 0) / 60000);
+        }
+        return values;
+    }
+
+    function computeStreaks(dayActivityMs) {
+        const activeKeys = Object.keys(dayActivityMs).filter(k => dayActivityMs[k] > 0).sort();
+        if (activeKeys.length === 0) {
+            return { currentStreak: 0, bestStreak: 0, totalStudyDays: 0 };
+        }
+
+        const activeSet = new Set(activeKeys);
+        const totalStudyDays = activeKeys.length;
+
+        let bestStreak = 1;
+        let run = 1;
+        for (let i = 1; i < activeKeys.length; i++) {
+            const prev = new Date(activeKeys[i - 1] + 'T00:00:00');
+            const cur = new Date(activeKeys[i] + 'T00:00:00');
+            const delta = Math.round((cur - prev) / 86400000);
+            run = delta === 1 ? run + 1 : 1;
+            if (run > bestStreak) {
+                bestStreak = run;
+            }
+        }
+
+        let currentStreak = 0;
+        const cursor = new Date();
+        cursor.setHours(0, 0, 0, 0);
+        while (activeSet.has(dateKey(cursor))) {
+            currentStreak += 1;
+            cursor.setDate(cursor.getDate() - 1);
+        }
+
+        return { currentStreak, bestStreak, totalStudyDays };
+    }
+
+    async function fetchJsonWithFallback(url, fallbackValue) {
+        try {
+            const res = await fetch(`${url}?v=${Date.now()}`, { cache: 'no-store' });
+            if (!res.ok) {
+                return fallbackValue;
+            }
+            return await res.json();
+        } catch (err) {
+            return fallbackValue;
+        }
+    }
+
+    function normalizeDailyTargetMinutes(raw) {
+        const list = Array.isArray(raw) ? raw.slice(0, 7) : [];
+        while (list.length < 7) {
+            list.push(0);
+        }
+        return list.map(v => Math.max(0, Math.floor(Number(v) || 0)));
+    }
+
+    function normalizeWeeklyTargetMinutes(rawWeekly, dailyTargetMinutes) {
+        if (Number.isFinite(Number(rawWeekly))) {
+            return Math.max(0, Math.floor(Number(rawWeekly)));
+        }
+        return dailyTargetMinutes.reduce((sum, v) => sum + v, 0);
+    }
+
+    function normalizeDayActivityMs(dayActivityMsRaw) {
+        const normalized = {};
+        if (!dayActivityMsRaw || typeof dayActivityMsRaw !== 'object') {
+            return normalized;
+        }
+        Object.keys(dayActivityMsRaw).forEach(key => {
+            const value = Number(dayActivityMsRaw[key]);
+            if (Number.isFinite(value) && value > 0) {
+                normalized[key] = Math.floor(value);
+            }
+        });
+        return normalized;
+    }
+
+    function mergeDayActivityMs(baseDayActivityMs, extraDayActivityMs) {
+        const merged = { ...normalizeDayActivityMs(baseDayActivityMs) };
+        const extra = normalizeDayActivityMs(extraDayActivityMs);
+        Object.keys(extra).forEach(key => {
+            merged[key] = (merged[key] || 0) + extra[key];
+        });
+        return merged;
+    }
+
+    function sumDayActivityMs(dayActivityMs) {
+        return Object.values(dayActivityMs || {}).reduce((sum, v) => sum + (Number(v) || 0), 0);
+    }
+
+    async function loadDashboardUserData(userId) {
+        const index = await fetchJsonWithFallback(`${DASHBOARD_DATA_DIR}/users.json`, {
+            defaultUserId: 'tomohiro.19',
+            users: {
+                'tomohiro.19': { configFile: 'tomohiro.19.json' }
+            }
+        });
+
+        const users = (index && typeof index.users === 'object' && index.users) ? index.users : {};
+        const defaultUserId = (index && typeof index.defaultUserId === 'string' && index.defaultUserId.trim())
+            ? index.defaultUserId.trim()
+            : 'tomohiro.19';
+
+        const selectedUser = users[userId] ? userId : defaultUserId;
+        const selectedEntry = users[selectedUser] || {};
+        const configFile = typeof selectedEntry === 'string'
+            ? selectedEntry
+            : (selectedEntry.configFile || `${selectedUser}.json`);
+
+        const userData = await fetchJsonWithFallback(`${DASHBOARD_DATA_DIR}/${configFile}`, {});
+        return { userData };
+    }
+
+    function setMetricSign(iconId, value) {
+        const icon = document.getElementById(iconId);
+        if (!icon) return;
+        if (value >= 0) {
+            icon.setAttribute('data-lucide', 'trending-up');
+            icon.classList.remove('text-rose-400');
+            icon.classList.add('text-emerald-400');
+        } else {
+            icon.setAttribute('data-lucide', 'trending-down');
+            icon.classList.remove('text-emerald-400');
+            icon.classList.add('text-rose-400');
+        }
+    }
+
+    function renderCircleChart(weeklyTotalMinutes, weeklyTargetMinutes) {
+        const progress = weeklyTargetMinutes > 0 ? Math.min(100, Math.round((weeklyTotalMinutes / weeklyTargetMinutes) * 100)) : 0;
+        const remain = 100 - progress;
+        const parts = splitHoursMinutes(weeklyTotalMinutes);
+        circleCenterTime = parts;
+        const ctxCircle = document.getElementById('circleChart');
+        if (!ctxCircle) return;
+
+        const centerTextPlugin = {
+            id: 'centerText',
+            afterDraw: (chart) => {
+                const { ctx, chartArea } = chart;
+                if (!chartArea) return;
+                const centerX = (chartArea.left + chartArea.right) / 2;
+                const centerY = (chartArea.top + chartArea.bottom) / 2;
+                const isMobile = window.innerWidth < 768;
+
+                ctx.save();
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.font = `700 ${isMobile ? '40px' : '52px'} Inter`;
+                ctx.fillStyle = 'white';
+                ctx.fillText(circleCenterTime.hours, centerX - (isMobile ? 26 : 34), centerY - 5);
+                ctx.fillText(circleCenterTime.minutes, centerX + (isMobile ? 28 : 38), centerY - 5);
+                ctx.font = `600 ${isMobile ? '12px' : '16px'} Inter`;
+                ctx.fillStyle = 'rgba(255,255,255,0.6)';
+                ctx.fillText('時間', centerX - (isMobile ? 26 : 34), centerY + (isMobile ? 30 : 40));
+                ctx.fillText('分', centerX + (isMobile ? 28 : 38), centerY + (isMobile ? 30 : 40));
+                ctx.restore();
+            }
+        };
+
+        if (circleChart) {
+            circleChart.destroy();
+        }
+        circleChart = new Chart(ctxCircle.getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: [progress, remain],
+                    backgroundColor: ['white', 'rgba(255,255,255,0.1)'],
+                    borderWidth: 0,
+                    borderRadius: 20,
+                    cutout: '90%'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false }, tooltip: { enabled: false } }
+            },
+            plugins: [centerTextPlugin]
+        });
+    }
+
+    function renderBarChart(actualMinutes, targetMinutes) {
+        const ctxBar = document.getElementById('barChart');
+        if (!ctxBar) return;
+        const yMax = Math.max(60, ...actualMinutes, ...targetMinutes) + 10;
+
+        if (barChart) {
+            barChart.destroy();
+        }
+        barChart = new Chart(ctxBar.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: WEEKDAY_LABELS_JA,
+                datasets: [
+                    {
+                        data: actualMinutes,
+                        backgroundColor: 'white',
+                        borderRadius: 10,
+                        barThickness: window.innerWidth < 768 ? 8 : 12,
+                        order: 1
+                    },
+                    {
+                        data: targetMinutes,
+                        backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                        borderRadius: 10,
+                        barThickness: window.innerWidth < 768 ? 8 : 12,
+                        order: 2,
+                        grouped: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                layout: {
+                    // Reserve room for target-minute labels above bars.
+                    padding: { top: 18 }
+                },
+                scales: {
+                    y: { display: false, max: yMax },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: 'rgba(255,255,255,0.6)', font: { size: 12, weight: '600' } },
+                        border: { display: false }
+                    }
+                },
+                plugins: { legend: { display: false }, tooltip: { enabled: false } }
+            },
+            plugins: [{
+                id: 'barTopLabel',
+                afterDatasetsDraw: (chart) => {
+                    const { ctx, chartArea } = chart;
+                    if (!chartArea) return;
+                    ctx.save();
+                    ctx.textAlign = 'center';
+                    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+                    ctx.font = 'bold 11px Inter';
+                    const meta = chart.getDatasetMeta(1);
+                    meta.data.forEach((bar, idx) => {
+                        const labelY = Math.max(chartArea.top + 10, bar.y - 12);
+                        ctx.fillText(String(targetMinutes[idx] || 0), bar.x, labelY);
+                    });
+                    ctx.restore();
+                }
+            }]
+        });
+    }
+
+    async function renderDashboard() {
+        if (window.KeptyStudyTracker && typeof window.KeptyStudyTracker.flush === 'function') {
+            window.KeptyStudyTracker.flush();
+        }
+
+        const userId = resolveUserId();
+        const { userData } = await loadDashboardUserData(userId);
+
+        const trackerSnapshot = window.KeptyStudyTracker
+            ? window.KeptyStudyTracker.getUserSnapshot(userId)
+            : { totalActiveMs: 0, dayActivityMs: {} };
+        const now = new Date();
+
+        const planned = (userData && typeof userData.planned === 'object') ? userData.planned : {};
+        const dailyTargetMinutes = normalizeDailyTargetMinutes(planned.dailyTargetMinutes);
+        const weeklyTargetMinutes = normalizeWeeklyTargetMinutes(planned.weeklyTargetMinutes, dailyTargetMinutes);
+
+        const historyDayActivityMs = normalizeDayActivityMs(userData && userData.historyDayActivityMs);
+        const useLocalTracker = !(userData && userData.storageMode === 'json-only');
+        const mergedDayActivityMs = useLocalTracker
+            ? mergeDayActivityMs(historyDayActivityMs, trackerSnapshot.dayActivityMs || {})
+            : historyDayActivityMs;
+
+        const mergedTotalActiveMs = sumDayActivityMs(mergedDayActivityMs);
+
+        const actualByDayMinutes = getDayActivityMinutesForCurrentWeek(mergedDayActivityMs, now);
+        const weeklyActualMinutes = actualByDayMinutes.reduce((sum, v) => sum + v, 0);
+
+        const elapsedDays = getElapsedCompletedDaysSinceMonday(now);
+        const progressSurplusMinutes = weeklyActualMinutes - (weeklyTargetMinutes * elapsedDays / 7);
+        const projectedResultMinutes = elapsedDays > 0
+            ? ((weeklyActualMinutes / elapsedDays) * 7) - weeklyTargetMinutes
+            : 0;
+
+        const weeklyTarget = splitHoursMinutes(weeklyTargetMinutes);
+        const weeklyActual = splitHoursMinutes(weeklyActualMinutes);
+
+        document.getElementById('weekly-target-hours').innerText = weeklyTarget.hours;
+        document.getElementById('weekly-target-minutes').innerText = weeklyTarget.minutes;
+        document.getElementById('weekly-total-hours').innerText = weeklyActual.hours;
+        document.getElementById('weekly-total-minutes').innerText = weeklyActual.minutes;
+
+        document.getElementById('surplus-value').innerText = signedMinutesText(progressSurplusMinutes);
+        document.getElementById('projection-value').innerText = signedMinutesText(projectedResultMinutes);
+        setMetricSign('surplus-icon', progressSurplusMinutes);
+        setMetricSign('projection-icon', projectedResultMinutes);
+
+        const lifetimeHours = Math.floor(mergedTotalActiveMs / 3600000);
+        document.getElementById('lifetime-total-hours').innerText = lifetimeHours.toLocaleString();
+
+        const streakData = computeStreaks(mergedDayActivityMs);
+        document.getElementById('total-study-days').innerText = streakData.totalStudyDays.toLocaleString();
+        document.getElementById('streak-days').innerText = streakData.currentStreak.toLocaleString();
+        document.getElementById('best-streak-label').innerText = `自己ベスト:${streakData.bestStreak}日`;
+
+        renderCircleChart(weeklyActualMinutes, weeklyTargetMinutes);
+        renderBarChart(actualByDayMinutes, dailyTargetMinutes);
+
+        lucide.createIcons();
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        renderDashboard();
+    });
+</script>
+<script>
+function toggleSideMenu(isOpen){var m=document.getElementById('side-menu-content'),o=document.getElementById('side-menu-overlay'),t=document.querySelector('.menu-pill-trigger');if(isOpen){m.classList.add('open');o.classList.remove('hidden');if(t)t.classList.add('hidden');}else{m.classList.remove('open');o.classList.add('hidden');if(t)t.classList.remove('hidden');}}
+document.addEventListener('DOMContentLoaded',function(){lucide.createIcons();});
+</script>
+
+</body>
+</html>
+
+
+
+
+
+

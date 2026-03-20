@@ -1,0 +1,62 @@
+Date : 2026-03-17 13:09:11
+Directory : c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src
+Total : 29 files,  10087 codes, 113 comments, 479 blanks, all 10679 lines
+
+Languages
++------------+------------+------------+------------+------------+------------+
+| language   | files      | code       | comment    | blank      | total      |
++------------+------------+------------+------------+------------+------------+
+| JSON       |         11 |      4,380 |          0 |          9 |      4,389 |
+| HTML       |          6 |      2,550 |          9 |        291 |      2,850 |
+| TSV        |          5 |      1,371 |          0 |          0 |      1,371 |
+| JavaScript |          3 |      1,108 |         27 |         61 |      1,196 |
+| PostCSS    |          1 |        549 |         77 |         76 |        702 |
+| Markdown   |          3 |        129 |          0 |         42 |        171 |
++------------+------------+------------+------------+------------+------------+
+
+Directories
++-----------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                                  | files      | code       | comment    | blank      | total      |
++-----------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                                     |         29 |     10,087 |        113 |        479 |     10,679 |
+| . (Files)                                                                                                             |         15 |      7,005 |        113 |        465 |      7,583 |
+| content                                                                                                               |          9 |      3,010 |          0 |          4 |      3,014 |
+| content\data                                                                                                          |          9 |      3,010 |          0 |          4 |      3,014 |
+| dashboard_data                                                                                                        |          5 |         72 |          0 |         10 |         82 |
++-----------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-----------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| filename                                                                                                              | language   | code       | comment    | blank      | total      |
++-----------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\AGENTS.md                                         | Markdown   |         72 |          0 |         20 |         92 |
+| c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\README.md                                         | Markdown   |         29 |          0 |         16 |         45 |
+| c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\admin-audio.html                                  | HTML       |        314 |          6 |         38 |        358 |
+| c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\app.js                                            | JavaScript |        388 |         26 |         38 |        452 |
+| c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\content\data\grammar - exam.tsv                   | TSV        |        341 |          0 |          0 |        341 |
+| c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\content\data\grammar - explain.tsv                | TSV        |         17 |          0 |          0 |         17 |
+| c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\content\data\pronunciation  - pronunciation.tsv   | TSV        |        283 |          0 |          0 |        283 |
+| c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\content\data\pronunciation-local-translation.js   | JavaScript |        543 |          0 |          1 |        544 |
+| c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\content\data\pronunciation-local-translation.json | JSON       |        542 |          0 |          1 |        543 |
+| c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\content\data\reading - content.tsv                | TSV        |         41 |          0 |          0 |         41 |
+| c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\content\data\reading-local-modes.json             | JSON       |        242 |          0 |          1 |        243 |
+| c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\content\data\shadowing - Sheet1.tsv               | TSV        |        689 |          0 |          0 |        689 |
+| c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\content\data\shadowing-japanese.json              | JSON       |        312 |          0 |          1 |        313 |
+| c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\dashboard.html                                    | HTML       |        579 |          0 |         67 |        646 |
+| c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\dashboard_data\README.md                          | Markdown   |         28 |          0 |          6 |         34 |
+| c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\dashboard_data\jay.json                           | JSON       |         11 |          0 |          1 |         12 |
+| c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\dashboard_data\sample.user.json                   | JSON       |          8 |          0 |          1 |          9 |
+| c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\dashboard_data\tomohiro.19.json                   | JSON       |         11 |          0 |          1 |         12 |
+| c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\dashboard_data\users.json                         | JSON       |         14 |          0 |          1 |         15 |
+| c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\dressing-room.html                                | HTML       |        315 |          0 |         43 |        358 |
+| c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\grammar-local.json                                | JSON       |      3,166 |          0 |          0 |      3,166 |
+| c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\index.css                                         | PostCSS    |        549 |         77 |         76 |        702 |
+| c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\index.html                                        | HTML       |        121 |          0 |         19 |        140 |
+| c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\kepty-audio-map.json                              | JSON       |          7 |          0 |          0 |          7 |
+| c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\learning-direction.html                           | HTML       |        371 |          0 |         36 |        407 |
+| c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\localexplain.json                                 | JSON       |         67 |          0 |          1 |         68 |
+| c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\main.html                                         | HTML       |        850 |          3 |         88 |        941 |
+| c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\study-tracker.js                                  | JavaScript |        177 |          1 |         22 |        200 |
+| c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\test.json                                         | JSON       |          0 |          0 |          1 |          1 |
+| Total                                                                                                                 |            |     10,087 |        113 |        479 |     10,679 |
++-----------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+

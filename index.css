@@ -1,0 +1,701 @@
+/* ============================================
+   KEPTY ENGLISH PORTAL - STYLES
+   ============================================
+   Mobile-first English learning portal CSS
+   Organized by component/feature sections
+   ============================================ */
+
+/* ============================================
+   1. CSS CUSTOM PROPERTIES (VARIABLES)
+   ============================================ */
+:root {
+    /* Brand Colors */
+    --kepty-orange: #CE4A22;
+    --kepty-light-orange: #FFEDE8;
+    --kepty-mid-orange: #FAC3B1;
+    --kepty-green: #10b981;
+    --kepty-light-green: #ecfdf5;
+    
+    /* Highlight Colors (Sound Changes) */
+    --hl-blue: #bfdbfe;
+    --hl-pink: #fbcfe8;
+    --hl-green-soft: #bbf7d0;
+    --hl-yellow: #fef08a;
+}
+
+/* ============================================
+   2. BASE STYLES
+   ============================================ */
+body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    -webkit-overflow-scrolling: touch;
+    background-color: #f8fafc;
+}
+
+/* Brand Color Classes */
+.bg-kepty-orange {
+    background-color: var(--kepty-orange) !important;
+}
+
+.text-kepty-orange {
+    color: var(--kepty-orange) !important;
+}
+
+/* ============================================
+   3. WELCOME OVERLAY (3-Second Display)
+   ============================================ */
+#welcome-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 50% 50%, #FF6B3D 0%, #CE4A22 45%, #2A0B02 100%);
+    z-index: 2000;
+    transition: opacity 0.6s ease-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#welcome-message {
+    color: #ffffff;
+    font-size: 32px;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    text-align: center;
+    padding: 20px;
+    white-space: pre-line;
+    opacity: 0;
+    transition: opacity 0.4s ease-in;
+}
+
+/* ============================================
+   4. MODE SWITCH COMPONENT
+   ============================================ */
+.mode-switch-wrapper {
+    padding-bottom: 16px;
+    border-bottom: 1px solid #f1f5f9;
+    margin-bottom: 16px;
+}
+
+.mode-switch-container {
+    background-color: #f1f5f9;
+    border-radius: 10px;
+    padding: 2px;
+    display: flex;
+    position: relative;
+    width: 100%;
+    height: 34px;
+}
+
+.mode-switch-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 400;
+    z-index: 10;
+    transition: color 0.25s;
+    color: #94a3b8;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.mode-switch-btn.active {
+    color: var(--kepty-orange);
+    font-weight: 700;
+}
+
+.mode-slider {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    height: calc(100% - 4px);
+    background-color: white;
+    border-radius: 8px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    z-index: 1;
+}
+
+/* ============================================
+   5. CATEGORY TABS
+   ============================================ */
+.category-tab {
+    transition: all 0.2s;
+    white-space: nowrap;
+    flex-shrink: 0;
+    font-weight: 600;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 16px;
+    min-width: 60px;
+    font-size: 11px;
+    border-radius: 9999px;
+    border: 1px solid #f1f5f9;
+    background: white;
+    color: #94a3b8;
+    cursor: pointer;
+}
+
+.category-tab.active {
+    background-color: var(--kepty-orange) !important;
+    color: white !important;
+    font-weight: 700;
+    border-color: var(--kepty-orange);
+}
+
+/* ============================================
+   6. THEME MENU / SCROLL
+   ============================================ */
+.theme-scroll-container {
+    display: flex;
+    overflow-x: auto;
+    gap: 20px;
+    padding: 0 4px 8px 4px;
+    scrollbar-width: none;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.theme-item {
+    padding: 8px 0;
+    border-bottom: 3px solid transparent;
+    font-size: 13px;
+    font-weight: 400;
+    color: #94a3b8;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.theme-item.active {
+    color: #1e293b;
+    font-weight: 700;
+    border-bottom-color: var(--kepty-orange);
+}
+
+/* ============================================
+   7. CARDS
+   ============================================ */
+
+/* Base Word Card */
+.word-card {
+    background: white;
+    border-radius: 20px;
+    border: 1px solid #f1f5f9;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+    width: 100%;
+    text-align: left;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+}
+
+/* Flip Card - Chunk (Sentence Building) */
+.flip-card-chunk,
+.flip-card-voc {
+    perspective: 1000px;
+    min-height: 70px;
+    cursor: pointer;
+    margin-bottom: 8px;
+    width: 100%;
+}
+
+.flip-card-voc {
+    min-height: 105px;
+}
+
+.flip-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+}
+
+.flipped .flip-card-inner {
+    transform: rotateY(180deg);
+}
+
+.flip-card-front,
+.flip-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    border-radius: 12px;
+    padding: 12px 20px 12px 32px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: left;
+}
+
+.flip-card-front {
+    background: white;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+
+.flip-card-back {
+    background: var(--kepty-light-green);
+    border: 1px solid #d1fae5;
+    transform: rotateY(180deg);
+}
+
+/* Kepty Card (Generic centered card) */
+.kepty-card {
+    background: white;
+    border-radius: 40px;
+    padding: 24px 24px 40px 24px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+    border: 1px solid #f1f5f9;
+    min-height: 240px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+}
+
+/* Card Inner Title */
+.card-inner-title {
+    font-size: 13px;
+    font-weight: 900;
+    color: var(--kepty-orange) !important;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+}
+
+/* ============================================
+   8. QUIZ COMPONENTS
+   ============================================ */
+
+/* Quiz Badge (Correct/Incorrect Indicator) */
+.quiz-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    z-index: 50;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.quiz-badge.correct {
+    background-color: #10b981;
+    display: flex;
+}
+
+.quiz-badge.incorrect {
+    background-color: #ef4444;
+    display: flex;
+}
+
+/* Quiz Option Button */
+.quiz-option-btn {
+    position: relative;
+    background: white;
+    border: 2px solid #f1f5f9;
+    transition: all 0.2s;
+    text-align: left;
+    padding: 16px;
+    border-radius: 16px;
+    font-weight: 700;
+    font-size: 14px;
+    width: 100%;
+    display: block;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.quiz-option-btn:active {
+    transform: scale(0.98) translateY(2px);
+}
+
+/* ============================================
+   9. PROGRESS INDICATORS
+   ============================================ */
+.progress-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    border: 1.5px solid #e2e8f0;
+    background: white;
+    transition: 0.3s;
+}
+
+.progress-dot.filled {
+    background: var(--kepty-orange);
+    border-color: var(--kepty-orange);
+}
+
+/* ============================================
+   10. FOOTER NAVIGATION
+   ============================================ */
+.portal-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    border-top: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding: 12px 0;
+    z-index: 100;
+    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.03);
+    scrollbar-width: none;
+}
+
+.footer-indicator {
+    position: fixed;
+    bottom: 22px;
+    right: 0;
+    z-index: 101;
+    background: linear-gradient(to left, white 40%, transparent);
+    color: var(--kepty-orange);
+    width: 40px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: bounce-x 1.2s infinite;
+    pointer-events: none;
+}
+
+.footer-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: 0.2s;
+    flex-shrink: 0;
+    width: 75px;
+}
+
+.footer-item.active {
+    color: var(--kepty-orange);
+}
+
+.footer-item span {
+    font-size: 7.5px;
+    font-weight: 700;
+    transform: translateY(-1px);
+    margin-top: 2px;
+}
+
+/* ============================================
+   11. BUTTONS
+   ============================================ */
+
+/* Recording Buttons */
+.exam-mic-btn {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #e2e8f0;
+    color: #94a3b8;
+    background: #f8fafc;
+    cursor: pointer;
+    position: relative;
+    z-index: 20;
+}
+
+.record-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid var(--kepty-orange);
+    color: var(--kepty-orange);
+    cursor: pointer;
+    transition: 0.2s;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.record-btn.recording {
+    background-color: var(--kepty-orange) !important;
+    color: white !important;
+    animation: ph-pulse 1s infinite !important;
+}
+
+/* Navigation / Action Buttons */
+.nav-icon-btn:active,
+.next-btn-orange:active {
+    transform: scale(0.92) translateY(2px) !important;
+}
+
+.next-btn-orange {
+    background-color: var(--kepty-orange) !important;
+    color: white !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    transition: transform 0.1s;
+    cursor: pointer;
+    position: relative;
+    z-index: 20;
+}
+
+/* Restart Link */
+.restart-link {
+    color: #94a3b8;
+    font-size: 14px;
+    font-weight: 700;
+    border-bottom: 2px solid var(--kepty-orange);
+    padding-bottom: 2px;
+    cursor: pointer;
+    transition: all 0.1s;
+    display: inline-block;
+}
+
+/* ============================================
+   12. SPEAKING FORM COMPONENTS
+   ============================================ */
+.sp-rule-box {
+    background: #f1f5f9;
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    text-align: left;
+    border: 1px solid #e2e8f0;
+}
+
+.sp-rule-badge {
+    background: #475569;
+    color: white;
+    font-size: 9px;
+    font-weight: 900;
+    padding: 2px 6px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 8px;
+}
+
+.sp-rule-text {
+    color: #1e293b;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.6;
+}
+
+/* ============================================
+   13. REVIEW / RESULTS
+   ============================================ */
+.review-item {
+    text-align: left;
+    padding: 12px;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 12px;
+}
+
+.review-item .q {
+    font-weight: 900;
+    color: #1e293b;
+    margin-bottom: 4px;
+}
+
+.review-item .a {
+    font-weight: 600;
+}
+
+/* ============================================
+   14. MODAL
+   ============================================ */
+#detail-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 3000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 24px;
+    padding: 24px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* ============================================
+   15. ANIMATIONS
+   ============================================ */
+
+/* Footer Bounce Animation */
+@keyframes bounce-x {
+    0%, 100% {
+        transform: translateX(0);
+        opacity: 0.5;
+    }
+    50% {
+        transform: translateX(-5px);
+        opacity: 1;
+    }
+}
+
+/* Recording Pulse Animation */
+@keyframes ph-pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+        box-shadow: 0 0 0 10px rgba(206, 74, 34, 0.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Voice Wave Animation */
+@keyframes wave {
+    0%, 100% {
+        height: 5px;
+    }
+    50% {
+        height: 25px;
+    }
+}
+
+/* ============================================
+   16. VOICE WAVE COMPONENT
+   ============================================ */
+.voice-wave {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    height: 30px;
+    margin: 20px 0;
+}
+
+.wave-bar {
+    width: 3px;
+    height: 5px;
+    background: linear-gradient(to top, var(--kepty-orange), #FAC3B1);
+    border-radius: 10px;
+    animation: wave 1.2s infinite ease-in-out;
+}
+
+.wave-bar:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.wave-bar:nth-child(3) {
+    animation-delay: 0.2s;
+}
+
+.wave-bar:nth-child(4) {
+    animation-delay: 0.15s;
+}
+
+.wave-bar:nth-child(5) {
+    animation-delay: 0.3s;
+}
+
+/* ============================================
+   17. JUDGMENT / FEEDBACK LABELS
+   ============================================ */
+.good-label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: 900;
+    font-size: 2.2rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s;
+    z-index: 50;
+    color: #16a34a;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
+}
+
+.good-label.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.1);
+}
+
+/* ============================================
+   18. UTILITY CLASSES
+   ============================================ */
+
+/* Hide Scrollbar */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+:root { --kepty-premium-orange: #CE4A22; }
+
+.menu-pill-trigger {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 66px;
+    height: 36px;
+    background-color: var(--kepty-premium-orange);
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5500; /* 最前面を保証 */
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(206, 74, 34, 0.3);
+    transition: transform 0.2s;
+}
+.menu-pill-trigger:active { transform: scale(0.9); }
+
+/* 画像のデザインを再現したアイコン */
+.pill-icon { width: 28px; display: flex; flex-direction: column; gap: 4px; }
+.pill-line { display: flex; align-items: center; gap: 3px; height: 2.5px; }
+.pill-line .line { height: 2.5px; background: white; border-radius: 10px; flex-grow: 1; }
+.pill-line .dot { width: 3px; height: 3px; background: white; border-radius: 50%; }
+.pill-line.top .line { width: 18px; }
+.pill-line.bot .line { width: 18px; order: -1; } /* ドットを右側に */
+
+.menu-item-link {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px;
+    border-radius: 18px;
+    transition: 0.2s;
+}
+.menu-item-link:hover { background: #f8fafc; }
+.menu-icon-box {
+    width: 40px; height: 40px; border-radius: 12px;
+    background: #f1f5f9; display: flex; align-items: center; justify-content: center; color: #64748b;
+}
+.menu-icon-box.active-bg { background: var(--kepty-premium-orange); color: white; }
+#side-menu-content.open { right: 0; }

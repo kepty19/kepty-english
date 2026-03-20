@@ -1,0 +1,31 @@
+"filename", "language", "JSON", "HTML", "JavaScript", "PostCSS", "Markdown", "TSV", "comment", "blank", "total"
+"c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\AGENTS.md", "Markdown", 0, 0, 0, 0, 72, 0, 0, 20, 92
+"c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\README.md", "Markdown", 0, 0, 0, 0, 29, 0, 0, 16, 45
+"c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\admin-audio.html", "HTML", 0, 314, 0, 0, 0, 0, 6, 38, 358
+"c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\app.js", "JavaScript", 0, 0, 388, 0, 0, 0, 26, 38, 452
+"c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\content\data\grammar - exam.tsv", "TSV", 0, 0, 0, 0, 0, 341, 0, 0, 341
+"c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\content\data\grammar - explain.tsv", "TSV", 0, 0, 0, 0, 0, 17, 0, 0, 17
+"c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\content\data\pronunciation  - pronunciation.tsv", "TSV", 0, 0, 0, 0, 0, 283, 0, 0, 283
+"c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\content\data\pronunciation-local-translation.js", "JavaScript", 0, 0, 543, 0, 0, 0, 0, 1, 544
+"c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\content\data\pronunciation-local-translation.json", "JSON", 542, 0, 0, 0, 0, 0, 0, 1, 543
+"c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\content\data\reading - content.tsv", "TSV", 0, 0, 0, 0, 0, 41, 0, 0, 41
+"c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\content\data\reading-local-modes.json", "JSON", 242, 0, 0, 0, 0, 0, 0, 1, 243
+"c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\content\data\shadowing - Sheet1.tsv", "TSV", 0, 0, 0, 0, 0, 689, 0, 0, 689
+"c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\content\data\shadowing-japanese.json", "JSON", 312, 0, 0, 0, 0, 0, 0, 1, 313
+"c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\dashboard.html", "HTML", 0, 579, 0, 0, 0, 0, 0, 67, 646
+"c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\dashboard_data\README.md", "Markdown", 0, 0, 0, 0, 28, 0, 0, 6, 34
+"c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\dashboard_data\jay.json", "JSON", 11, 0, 0, 0, 0, 0, 0, 1, 12
+"c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\dashboard_data\sample.user.json", "JSON", 8, 0, 0, 0, 0, 0, 0, 1, 9
+"c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\dashboard_data\tomohiro.19.json", "JSON", 11, 0, 0, 0, 0, 0, 0, 1, 12
+"c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\dashboard_data\users.json", "JSON", 14, 0, 0, 0, 0, 0, 0, 1, 15
+"c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\dressing-room.html", "HTML", 0, 315, 0, 0, 0, 0, 0, 43, 358
+"c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\grammar-local.json", "JSON", 3166, 0, 0, 0, 0, 0, 0, 0, 3166
+"c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\index.css", "PostCSS", 0, 0, 0, 549, 0, 0, 77, 76, 702
+"c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\index.html", "HTML", 0, 121, 0, 0, 0, 0, 0, 19, 140
+"c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\kepty-audio-map.json", "JSON", 7, 0, 0, 0, 0, 0, 0, 0, 7
+"c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\learning-direction.html", "HTML", 0, 371, 0, 0, 0, 0, 0, 36, 407
+"c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\localexplain.json", "JSON", 67, 0, 0, 0, 0, 0, 0, 1, 68
+"c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\main.html", "HTML", 0, 850, 0, 0, 0, 0, 3, 88, 941
+"c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\study-tracker.js", "JavaScript", 0, 0, 177, 0, 0, 0, 1, 22, 200
+"c:\Users\marce\OneDrive\Escritorio\Business\Kepty\Kepty English\src\test.json", "JSON", 0, 0, 0, 0, 0, 0, 0, 1, 1
+"Total", "-", 4380, 2550, 1108, 549, 129, 1371, 113, 479, 10679

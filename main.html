@@ -1,0 +1,940 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Kepty English Portal</title>
+<!-- External Libraries -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="study-tracker.js" defer></script>
+<script src="content/data/pronunciation-local-translation.js"></script>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+<!-- Application Styles -->
+<link rel="stylesheet" href="index.css">
+<style>
+    .menu-pill-trigger { position:fixed;top:20px;right:20px;width:50px;height:27px;background-color:#CE4A22;border-radius:999px;display:flex;align-items:center;justify-content:center;z-index:5500;cursor:pointer;box-shadow:0 3px 10px rgba(15,23,42,.16);transition:transform .2s, opacity .2s;opacity:0;pointer-events:none; }
+    .menu-pill-trigger.ready { opacity:1; pointer-events:auto; }
+    .menu-pill-trigger:active { transform:scale(.9); }
+    .pill-icon { width:21px;display:flex;flex-direction:column;gap:3px; }
+    .pill-line { display:flex;align-items:center;gap:2px;height:2px; }
+    .pill-line .line { height:2px;background:white;border-radius:10px;flex-grow:1; }
+    .pill-line .dot { width:2px;height:2px;background:white;border-radius:50%; }
+    .pill-line.top .line { width:14px; }
+    .pill-line.bot .line { width:14px;order:-1; }
+    .side-menu-item-link { display:flex;align-items:center;gap:14px;padding:12px;border-radius:18px;transition:.2s;text-decoration:none; }
+    .side-menu-item-link:hover { background:#f8fafc; }
+    .side-menu-icon-box { width:40px;height:40px;border-radius:12px;background:#FFEDE8;display:flex;align-items:center;justify-content:center;color:#CE4A22; }
+    .side-menu-icon-box.active-bg { background:#CE4A22;color:white; }
+    #side-menu-content.open { right:0; }
+    #main-content-area iframe { width: 100% !important; max-width: 100% !important; }
+    #main-content-area .video-wrapper iframe { aspect-ratio: 16/9; }
+</style>
+</head>
+<body class="bg-slate-50 text-slate-900 pb-24 text-center">
+<div class="menu-pill-trigger" onclick="toggleSideMenu(true)"><div class="pill-icon"><div class="pill-line top"><span class="dot"></span><span class="line"></span></div><div class="pill-line mid"><span class="line"></span></div><div class="pill-line bot"><span class="line"></span><span class="dot"></span></div></div></div>
+<div id="side-menu-overlay" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[5000] hidden" onclick="toggleSideMenu(false)"></div>
+<nav id="side-menu-content" class="fixed top-0 right-[-280px] w-[280px] h-full bg-white z-[5001] transition-all duration-300 shadow-2xl p-6 flex flex-col"><div class="flex justify-between items-center mb-10"><div class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-l-2 border-slate-500 pl-3">Menu</div><button onclick="toggleSideMenu(false)" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-50 text-slate-400"><i data-lucide="x" class="w-5 h-5"></i></button></div><div class="space-y-3"><a href="main.html" class="side-menu-item-link"><div class="side-menu-icon-box"><i data-lucide="graduation-cap"></i></div><div class="flex flex-col"><span class="text-sm font-black text-slate-800">各種トレーニング</span></div></a><a href="dashboard.html" class="side-menu-item-link"><div class="side-menu-icon-box"><i data-lucide="bar-chart-3"></i></div><div class="flex flex-col"><span class="text-sm font-black text-slate-800">学習管理</span></div></a><a href="learning-direction.html" class="side-menu-item-link"><div class="side-menu-icon-box"><i data-lucide="compass"></i></div><div class="flex flex-col"><span class="text-sm font-black text-slate-800">学習方針</span></div></a><a href="dressing-room.html" class="side-menu-item-link"><div class="side-menu-icon-box"><i data-lucide="shirt"></i></div><div class="flex flex-col"><span class="text-sm font-black text-slate-800">ドレッシングルーム</span></div></a><a href="admin-audio.html" class="side-menu-item-link"><div class="side-menu-icon-box"><i data-lucide="settings"></i></div><div class="flex flex-col"><span class="text-sm font-black text-slate-800">音声管理</span></div></a></div></nav>
+<div id="welcome-overlay"><div id="welcome-message">Kepty English</div></div>
+<div class="p-4 max-w-5xl mx-auto">
+    <header class="py-6 px-2">
+        <div class="flex items-start justify-between gap-4">
+            <h1 id="app-title" class="text-3xl font-[900] text-slate-900 tracking-tighter">Vocabulary</h1>
+        </div>
+        <p id="app-description" class="text-left text-[12px] md:text-[13px] text-slate-500 leading-relaxed mt-3 min-h-[3.6em]"></p>
+    </header>
+    <div class="mode-switch-wrapper" id="mode-wrapper"><div class="mode-switch-container" id="mode-switch-container"><div class="mode-slider" id="mode-slider"></div><div id="mode-buttons-area" class="flex w-full h-full"></div></div></div>
+    <div id="category-container" class="flex overflow-x-auto gap-1 mb-1 no-scrollbar px-1"></div>
+    <div id="theme-menu-container" class="mb-6 hidden"><div id="theme-scroll-list" class="theme-scroll-container"></div></div>
+    <div id="ph-progress-area" class="hidden max-w-xl mx-auto mb-6 bg-transparent flex items-center justify-center"><div id="ph-progress-dots" class="flex justify-center gap-1.5 py-1"></div></div>
+    <div id="main-content-area" class="mt-4"></div>
+</div>
+<div class="footer-indicator" id="footer-arrow"><i data-lucide="chevron-right" class="w-5 h-5"></i></div>
+<footer class="portal-footer" id="main-footer">
+    <div onclick="switchApp('vocabulary')" id="nav-vocabulary" class="footer-item active"><i data-lucide="graduation-cap"></i><span>Vocabulary</span></div>
+    <div onclick="switchApp('pronunciation')" id="nav-pronunciation" class="footer-item"><i data-lucide="mic-2"></i><span>Pronunciation</span></div>
+    <div onclick="switchApp('grammar')" id="nav-grammar" class="footer-item"><i data-lucide="book-open"></i><span>Grammar</span></div>
+    <div onclick="switchApp('shadowing')" id="nav-shadowing" class="footer-item"><i data-lucide="headphones"></i><span>Shadowing</span></div>
+    <div onclick="switchApp('reading')" id="nav-reading" class="footer-item"><i data-lucide="book-marked"></i><span>Reading</span></div>
+    <div onclick="switchApp('topicTalk')" id="nav-topicTalk" class="footer-item"><i data-lucide="message-circle"></i><span>Topic Talk</span></div>
+    <div onclick="switchApp('speaking')" id="nav-speaking" class="footer-item"><i data-lucide="message-square"></i><span>Speaking Form</span></div>
+    <div onclick="switchApp('chunk')" id="nav-chunk" class="footer-item"><i data-lucide="layers"></i><span>Sentence Building</span></div>
+</footer>
+<div id="detail-modal" onclick="this.style.display='none'"><div class="modal-content" onclick="event.stopPropagation()"><div class="flex items-center"><div id="modal-bar" class="w-1 self-stretch rounded-full mr-4"></div><div class="flex-1 text-left"><div class="flex items-center gap-3 mb-1"><span id="modal-title-text" class="text-[10px] font-black uppercase tracking-wider"></span><div class="w-px h-3 bg-slate-200"></div><span id="modal-target" class="text-sm font-bold text-slate-800"></span></div><div id="modal-desc" class="text-sm text-slate-700 font-medium leading-relaxed"></div></div></div></div></div>
+<audio id="global-player"></audio>
+<script>
+window.onerror = function(msg, url, line, col, err) { console.error('[GLOBAL ERROR]', msg, 'at line', line, ':', err); };
+const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwXjpU2jbuvLoLRIW5xqMZJTe728VOylyGBAP192o27Y1CJisC6vb6dOmO94a7lKjvA/exec";
+const urlParams = new URLSearchParams(window.location.search);
+const userId = urlParams.get('id') || "tomohiro.19";
+localStorage.setItem('keptyUserId', userId);
+
+const initialFetch = fetch(`${GAS_WEB_APP_URL}?id=${userId}`).then(res => res.json());
+
+let portalData = null; let currentApp = 'vocabulary'; let currentModeIdx = 0; let currentSubKey = ""; let currentTheme = ""; let examIdx = 0; let currentExamNum = 1; let examResults = []; let shadowingMode = 'script'; let readingViewMode = 'reading'; let currentAudioUrl = ""; let phCompletedIds = new Set();
+let mediaRecorder; let audioChunks = [];
+const HL_TYPES = ['Linking', 'Reduction', 'Flap T', 'Special Sound Changes'];
+const HL_COLORS = { 'Linking': 'var(--hl-blue)', 'Reduction': 'var(--hl-pink)', 'Flap T': 'var(--hl-green-soft)', 'Special Sound Changes': 'var(--hl-yellow)', 'Special': 'var(--hl-yellow)' };
+const BOLD_COLORS = { 'Linking': '#2563eb', 'Reduction': '#db2777', 'Flap T': '#059669', 'Special Sound Changes': '#a16207', 'Special': '#a16207' };
+
+function getTrainingMeta(appName) {
+    const meta = {
+        vocabulary: {description: '表現の幅が広がり、伝えたいことを正確に言語化できるようになります。単語単体ではなく、例文とともに「どう使うか」の文脈をセットで覚えると最善です。' },
+        pronunciation: { skillIcon: 'audio-lines', skillText: 'Phonetic Accuracy', description: '会話の内容が聞き取れない、相手に聞き返される、そのようなストレスをなくせるようになります。自分の声とネイティブの音との「わずかな差」を客観的に修正し続けることが上達の近道です。' },
+        grammar: { skillIcon: 'book-open-check', skillText: 'Structural Clarity', description: '言葉を正しくつなぐルールを理解することで、誤解のない正確な意思疎通が可能になります。形を暗記するだけでなく「なぜその形になるのか」という概念を理解し、実際に文を作る練習が不可欠です。' },
+        shadowing: { skillIcon: 'headphones', skillText: 'Listening Fluency', description: '英語特有のリズムや強弱、音の変化が身につき、リスニング力と流暢さが飛躍的に向上します。ただ音を追うだけでなく、常に文章の意味を頭に浮かべながら行うことで「脳の回路」が強化されます。' },
+        reading: { skillIcon: 'book-marked', skillText: 'Logical Reading', description: '文脈の中での語彙・文法の使われ方を学び、素早く・論理的に英語を理解する力が養われます。一言一句を訳そうとせず、文章全体の情景や筆者の意図をイメージで捉える意識が大切です。' },
+        topicTalk: { skillIcon: 'message-circle', skillText: 'Opinion Delivery', description: '特定のテーマについて自分の意見を論理的に展開し、会話を継続させる力がつきます。事前にキーワードを準備した上で、詰まっても別の表現で言い換える（パラフレーズ）粘り強さが鍵となります。' },
+        speaking: { skillIcon: 'message-square', skillText: 'Speaking Framework', description: 'スピーキング時の適切な表現方法・型を習得し、より相手に納得感を与える話し方ができるようになります。日本語と英語の表現方法の違いを理解することで、日本語的な話し方から脱却します。' },
+        chunk: { skillIcon: 'layers', skillText: 'Response Speed', description: '頭の中にある断片的な情報を瞬時に文章化し、会話のレスポンス速度を高めます。簡単な文から始め、接続詞などを使って徐々に情報を肉付けしていくステップアップが非常に有効です。' }
+    };
+    return meta[appName] || { skillIcon: 'sparkles', skillText: 'Training', description: '' };
+}
+
+function switchApp(appName) {
+    currentApp = appName; currentModeIdx = 0; examIdx = 0; currentTheme = ""; currentSubKey = ""; examResults = []; shadowingMode = 'script'; readingViewMode = 'reading';
+    document.querySelectorAll('.footer-item').forEach(el => el.classList.remove('active'));
+    const navEl = document.getElementById(`nav-${appName}`); if(navEl) navEl.classList.add('active');
+    const titles = { chunk:'Sentence Building', topicTalk:'Topic Talk', shadowing:'Shadowing', reading:'Reading', pronunciation:'Pronunciation', speaking:'Speaking Form', vocabulary:'Vocabulary', grammar:'Grammar' };
+    document.getElementById('app-title').innerText = titles[appName];
+    const meta = getTrainingMeta(appName);
+    const desc = document.getElementById('app-description');
+    if (desc) {
+        desc.innerText = meta.description;
+    }
+    const modeArea = document.getElementById('mode-buttons-area'), slider = document.getElementById('mode-slider');
+    let modes = ['Training', 'Exam'];
+    if (appName === 'shadowing') modes = ['Practice']; else if (appName === 'reading' || appName === 'topicTalk') modes = ['Topic']; else if (appName === 'pronunciation') modes = ['Explain', 'Video', 'Exam']; else if (appName === 'grammar' || appName === 'speaking') modes = ['Explain', 'Exam']; else if (appName === 'vocabulary') modes = ['List', 'Exam'];
+    document.getElementById('mode-wrapper').style.display = (modes.length <= 1) ? 'none' : 'block';
+    slider.style.width = `calc(100% / ${modes.length} - 2px)`;
+    modeArea.innerHTML = modes.map((m, i) => `<div onclick="switchMode(${i})" class="mode-switch-btn ${i===0?'active':''}" id="mbtn-${i}">${m}</div>`).join('');
+    document.getElementById('main-content-area').innerHTML = "";
+    
+    if (!portalData) {
+        document.getElementById('category-container').innerHTML = "";
+        document.getElementById('theme-menu-container').classList.add('hidden');
+        document.getElementById('main-content-area').innerHTML = `<div class="flex flex-col items-center justify-center py-20 text-slate-300"><i data-lucide="loader-2" class="w-8 h-8 animate-spin mb-4"></i><p class="text-sm font-bold tracking-widest uppercase">Loading Data...</p></div>`;
+        lucide.createIcons();
+        return;
+    }
+    
+    switchMode(0); renderCategories();
+}
+function switchMode(idx) { currentModeIdx = idx; document.getElementById('mode-slider').style.transform = `translateX(${idx * 100}%)`; document.querySelectorAll('.mode-switch-btn').forEach((btn, i) => btn.classList.toggle('active', i === idx)); document.getElementById('ph-progress-area').classList.add('hidden'); renderThemes(); }
+function renderCategories() {
+    const container = document.getElementById('category-container');
+    const data = currentApp === 'grammar' ? getActiveGrammarData() : portalData[currentApp];
+    if(!data) return;
+    const uniqueKeys = [...new Set(data.map(item => item.lesson || item.category))].filter(Boolean);
+    if (uniqueKeys.length === 0) {
+        currentSubKey = '';
+        container.innerHTML = '';
+        renderThemes();
+        return;
+    }
+    if (!currentSubKey || !uniqueKeys.includes(currentSubKey)) currentSubKey = uniqueKeys[0];
+    container.innerHTML = uniqueKeys.map(k => {
+        const safe = String(k).replace(/'/g, "\\'");
+        const label = currentApp === 'pronunciation' ? String(k).toLowerCase() : String(k);
+        return `<button onclick="selectSubKey('${safe}')" class="category-tab ${currentSubKey === k ? 'active' : ''}">${label}</button>`;
+    }).join('');
+    renderThemes();
+}
+function renderThemes() {
+    const themeMenu = document.getElementById('theme-menu-container'), themeList = document.getElementById('theme-scroll-list');
+    const isEx = (currentApp === 'pronunciation' ? currentModeIdx === 2 : (currentApp === 'chunk' || currentApp === 'vocabulary' || currentApp === 'grammar' || currentApp === 'speaking' ? currentModeIdx === 1 : false));
+    const pronunciationExamWithSubcategories = currentApp === 'pronunciation' && currentModeIdx === 2;
+    if ((isEx && !pronunciationExamWithSubcategories) || currentApp === 'vocabulary') { themeMenu.classList.add('hidden'); renderContent(); return; }
+    const data = currentApp === 'grammar' ? getActiveGrammarData() : portalData[currentApp];
+    if (!data || data.length === 0) { themeMenu.classList.add('hidden'); renderContent(); return; }
+    const filteredBySub = data.filter(d => (d.lesson || d.category) === currentSubKey);
+    const themes = [...new Set(filteredBySub.map(d => d.theme || d.point || d.subcategory))].filter(Boolean);
+    if (themes.length === 0) { themeMenu.classList.add('hidden'); renderContent(); return; }
+    if (!currentTheme || !themes.includes(currentTheme)) currentTheme = themes[0];
+    themeMenu.classList.remove('hidden'); themeList.innerHTML = themes.map(t => `<div onclick="selectTheme('${t}')" class="theme-item ${currentTheme === t ? 'active' : ''}">${currentApp==='shadowing'?'#'+t:t}</div>`).join('');
+    renderContent();
+}
+function selectSubKey(key) { currentSubKey = key; currentTheme = ""; examIdx = 0; examResults = []; shadowingMode = 'script'; readingViewMode = 'reading'; stopAudio(); renderCategories(); }
+function selectTheme(themeName) { currentTheme = themeName; shadowingMode = 'script'; readingViewMode = 'reading'; stopAudio(); renderThemes(); }
+function stopAudio() { const p = document.getElementById('global-player'); p.pause(); p.currentTime = 0; currentAudioIdx = null; currentAudioTime = 0; }
+function generateProgressDotsHtml(total, current, columns = 10) {
+    let rows = Math.ceil(total / columns), html = `<div class="flex flex-col items-center gap-1.5 mb-6">`;
+    for(let r=0; r<rows; r++) { html += `<div class="flex gap-1.5">`; for(let i=0; i<columns; i++) { let idx = r * columns + i; if(idx < total) html += `<div class="progress-dot ${idx < current ? 'filled' : ''}"></div>`; } html += `</div>`; }
+    return html + `</div>`;
+}
+
+function normalizeTextKey(v) {
+    return String(v || '').trim().toLowerCase();
+}
+
+const DEFAULT_LOCAL_GRAMMAR = { grammar: [], grammarManual: {} };
+let LOCAL_GRAMMAR = { ...DEFAULT_LOCAL_GRAMMAR };
+
+function normalizeLocalGrammarData(raw) {
+    const out = { grammar: [], grammarManual: {} };
+    if (!raw || typeof raw !== 'object') return out;
+
+    const categories = Array.isArray(raw.categories) ? raw.categories : [];
+    categories.forEach(entry => {
+        const category = String(entry?.category || '').trim();
+        if (!category) return;
+
+        const explain = String(entry?.explain || '').trim();
+        if (explain) out.grammarManual[category] = explain;
+
+        const examRows = Array.isArray(entry?.exam) ? entry.exam : [];
+        examRows.forEach(row => {
+            const question = String(row?.question || '').trim();
+            const answer = String(row?.answer || '').trim();
+            if (!question || !answer) return;
+            out.grammar.push({
+                category,
+                question,
+                answer,
+                option2: String(row?.option2 || '').trim(),
+                option3: String(row?.option3 || '').trim(),
+                option4: String(row?.option4 || '').trim(),
+                explanation: String(row?.explanation || '').trim()
+            });
+        });
+    });
+
+    return out;
+}
+
+async function loadLocalGrammarData() {
+    try {
+        const res = await fetch('./grammar-local.json', { cache: 'no-store' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const json = await res.json();
+        LOCAL_GRAMMAR = normalizeLocalGrammarData(json);
+        console.info('[GrammarLocal] Loaded grammar-local.json', {
+            examCount: LOCAL_GRAMMAR.grammar.length,
+            explainCount: Object.keys(LOCAL_GRAMMAR.grammarManual || {}).length
+        });
+    } catch (err) {
+        LOCAL_GRAMMAR = { ...DEFAULT_LOCAL_GRAMMAR };
+        console.warn('[GrammarLocal] grammar-local.json not loaded.', err);
+    }
+}
+
+const localGrammarFetch = loadLocalGrammarData();
+
+function getActiveGrammarData() {
+    return Array.isArray(LOCAL_GRAMMAR.grammar) ? LOCAL_GRAMMAR.grammar : [];
+}
+
+function getActiveGrammarManual() {
+    return LOCAL_GRAMMAR.grammarManual && typeof LOCAL_GRAMMAR.grammarManual === 'object'
+        ? LOCAL_GRAMMAR.grammarManual
+        : {};
+}
+
+const DEFAULT_LOCAL_PRON_TRANSLATIONS = { byKey: {}, byWord: {} };
+let LOCAL_PRON_TRANSLATIONS = normalizeLocalPronTranslations(window.KEPTY_PRON_TRANSLATIONS || DEFAULT_LOCAL_PRON_TRANSLATIONS);
+
+function normalizePronWordKey(v) {
+    return normalizeTextKey(v).replace(/\s*\/\s*/g, '/').replace(/\s+/g, ' ');
+}
+
+function buildPronTranslationKey(category, subcategory, point, word) {
+    return `${normalizeTextKey(category)}::${normalizeTextKey(subcategory)}::${normalizeTextKey(point)}::${normalizeTextKey(word)}`;
+}
+
+function normalizeLocalPronTranslations(raw) {
+    const out = { byKey: {}, byWord: {} };
+    if (!raw || typeof raw !== 'object') return out;
+
+    Object.entries(raw.byKey || {}).forEach(([k, v]) => {
+        const key = String(k || '').trim();
+        const val = String(v || '').trim();
+        if (!key || !val) return;
+        out.byKey[key] = val;
+    });
+
+    Object.entries(raw.byWord || {}).forEach(([k, v]) => {
+        const key = normalizeTextKey(k);
+        const val = String(v || '').trim();
+        if (!key || !val) return;
+        out.byWord[key] = val;
+    });
+
+    return out;
+}
+
+async function loadLocalPronunciationTranslations() {
+    try {
+        if (window.KEPTY_PRON_TRANSLATIONS && typeof window.KEPTY_PRON_TRANSLATIONS === 'object') {
+            LOCAL_PRON_TRANSLATIONS = normalizeLocalPronTranslations(window.KEPTY_PRON_TRANSLATIONS);
+            console.info('[PronLocalTranslation] Loaded pronunciation-local-translation.js', {
+                byKeyCount: Object.keys(LOCAL_PRON_TRANSLATIONS.byKey || {}).length,
+                byWordCount: Object.keys(LOCAL_PRON_TRANSLATIONS.byWord || {}).length
+            });
+            return;
+        }
+
+        const res = await fetch('./content/data/pronunciation-local-translation.json', { cache: 'no-store' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const json = await res.json();
+        LOCAL_PRON_TRANSLATIONS = normalizeLocalPronTranslations(json);
+        console.info('[PronLocalTranslation] Loaded pronunciation-local-translation.json', {
+            byKeyCount: Object.keys(LOCAL_PRON_TRANSLATIONS.byKey || {}).length,
+            byWordCount: Object.keys(LOCAL_PRON_TRANSLATIONS.byWord || {}).length
+        });
+    } catch (err) {
+        LOCAL_PRON_TRANSLATIONS = { ...DEFAULT_LOCAL_PRON_TRANSLATIONS };
+        console.warn('[PronLocalTranslation] pronunciation-local-translation.json not loaded.', err);
+    }
+}
+
+const localPronTranslationsFetch = loadLocalPronunciationTranslations();
+
+function getLocalPronunciationTranslation(item) {
+    const key = buildPronTranslationKey(item?.category, item?.subcategory, item?.point, item?.word);
+    const fromKey = LOCAL_PRON_TRANSLATIONS.byKey?.[key] || '';
+    if (fromKey) return fromKey;
+    const wordKey = normalizeTextKey(item?.word);
+    const fromWord = LOCAL_PRON_TRANSLATIONS.byWord?.[wordKey] || '';
+    if (fromWord) return fromWord;
+
+    const looseWordKey = normalizePronWordKey(item?.word);
+    if (looseWordKey && looseWordKey !== wordKey) {
+        return LOCAL_PRON_TRANSLATIONS.byWord?.[looseWordKey] || '';
+    }
+    return '';
+}
+
+function getPronunciationCardFields(item) {
+    let word = String(item?.word || '');
+    let symbol = String(item?.symbol || '');
+    let katakana = String(item?.katakana || '');
+    let translation = String(getLocalPronunciationTranslation(item) || '');
+
+    // Some sheet layouts can arrive shifted by one column.
+    // Auto-correct obvious cases so cards still show: word -> symbol -> katakana.
+    const looksLikeWord = v => /[a-z]/i.test(v) && !/[\u0250-\u02af]/.test(v) && !/[\u02c8\u02cc\/]/.test(v);
+    const looksLikeIpa = v => /[\u0250-\u02af\u02c8\u02cc\/]/.test(v);
+    const looksLikePointLabel = v => /[「」]/.test(v) || (/[ぁ-んァ-ヶ一-龯]/.test(v) && !/[a-z]/i.test(v));
+    const looksLikeJapanese = v => /[ぁ-ゖァ-ヺ一-龯々〆ヵヶ]/.test(String(v || ''));
+    const hasHiraganaOrKanji = v => /[ぁ-ゖ一-龯々〆ヵヶ]/.test(String(v || ''));
+
+    if (looksLikePointLabel(word) && looksLikeWord(symbol) && looksLikeIpa(katakana)) {
+        word = symbol;
+        symbol = katakana;
+        katakana = String(item?.translation || '');
+        translation = String(getLocalPronunciationTranslation({
+            category: item?.category,
+            subcategory: item?.subcategory,
+            point: item?.point,
+            word: word
+        }) || getLocalPronunciationTranslation(item) || '');
+    }
+
+    // Only recover from katakana slot when it contains meaning text (hiragana/kanji),
+    // not when it is just katakana pronunciation.
+    // Endpoint translation is the only source for the card's last line.
+
+    return { word, symbol, katakana, translation };
+}
+
+const DEFAULT_LOCAL_PRONUNCIATION_EXPLAIN = { byCategory: {}, byThemeKey: {} };
+let LOCAL_PRONUNCIATION_EXPLAIN = { byCategory: {}, byThemeKey: {} };
+
+function normalizeExplainMap(rawMap) {
+    const out = { byCategory: {}, byThemeKey: {} };
+    if (!rawMap || typeof rawMap !== 'object') return out;
+
+    Object.entries(rawMap.byCategory || {}).forEach(([k, v]) => {
+        if (typeof v !== 'string' || !String(v).trim()) return;
+        const nk = normalizeTextKey(k);
+        if (!nk) return;
+        out.byCategory[nk] = v;
+    });
+
+    Object.entries(rawMap.byThemeKey || {}).forEach(([k, v]) => {
+        if (typeof v !== 'string' || !String(v).trim()) return;
+        const parts = String(k || '').split('::');
+        if (parts.length !== 2) return;
+        const c = normalizeTextKey(parts[0]);
+        const t = normalizeTextKey(parts[1]);
+        if (!c || !t) return;
+        out.byThemeKey[`${c}::${t}`] = v;
+    });
+
+    return out;
+}
+
+async function loadLocalPronunciationExplain() {
+    try {
+        const res = await fetch('./localexplain.json', { cache: 'no-store' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const json = await res.json();
+        LOCAL_PRONUNCIATION_EXPLAIN = normalizeExplainMap(json);
+        console.info('[PronExplain] Loaded localexplain.json', {
+            byCategoryCount: Object.keys(LOCAL_PRONUNCIATION_EXPLAIN.byCategory || {}).length,
+            byThemeCount: Object.keys(LOCAL_PRONUNCIATION_EXPLAIN.byThemeKey || {}).length
+        });
+    } catch (err) {
+        LOCAL_PRONUNCIATION_EXPLAIN = { ...DEFAULT_LOCAL_PRONUNCIATION_EXPLAIN };
+        console.warn('[PronExplain] localexplain.json not loaded. Fallback to backend/index sources.', err);
+    }
+}
+
+const localExplainFetch = loadLocalPronunciationExplain();
+
+const DEFAULT_LOCAL_SHADOWING_JAPANESE = {};
+let LOCAL_SHADOWING_JAPANESE = { ...DEFAULT_LOCAL_SHADOWING_JAPANESE };
+
+function buildShadowingKey(lesson, theme) {
+    return `${normalizeTextKey(lesson)}::${normalizeTextKey(theme)}`;
+}
+
+function normalizeLocalShadowingJapanese(raw) {
+    const out = {};
+    const items = Array.isArray(raw) ? raw : [];
+    items.forEach(entry => {
+        const lesson = String(entry?.lesson || '').trim();
+        const theme = String(entry?.theme || '').trim();
+        const japanese = String(entry?.japanese || '').trim();
+        if (!lesson || !theme || !japanese) return;
+        out[buildShadowingKey(lesson, theme)] = japanese;
+    });
+    return out;
+}
+
+async function loadLocalShadowingJapanese() {
+    try {
+        const res = await fetch('./content/data/shadowing-japanese.json', { cache: 'no-store' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const json = await res.json();
+        LOCAL_SHADOWING_JAPANESE = normalizeLocalShadowingJapanese(json);
+        console.info('[ShadowingLocalJP] Loaded shadowing-japanese.json', {
+            count: Object.keys(LOCAL_SHADOWING_JAPANESE).length
+        });
+    } catch (err) {
+        LOCAL_SHADOWING_JAPANESE = { ...DEFAULT_LOCAL_SHADOWING_JAPANESE };
+        console.warn('[ShadowingLocalJP] shadowing-japanese.json not loaded.', err);
+    }
+}
+
+const localShadowingJapaneseFetch = loadLocalShadowingJapanese();
+
+function getLocalShadowingJapanese(lesson, theme) {
+    return LOCAL_SHADOWING_JAPANESE[buildShadowingKey(lesson, theme)] || '';
+}
+
+const DEFAULT_LOCAL_READING_MODES = {};
+let LOCAL_READING_MODES = { ...DEFAULT_LOCAL_READING_MODES };
+
+function buildReadingKey(category, theme) {
+    return `${normalizeTextKey(category)}::${normalizeTextKey(theme)}`;
+}
+
+function normalizeLocalReadingModes(raw) {
+    const out = {};
+    const items = Array.isArray(raw) ? raw : [];
+    items.forEach(entry => {
+        const category = String(entry?.category || '').trim();
+        const theme = String(entry?.theme || '').trim();
+        if (!category || !theme) return;
+        out[buildReadingKey(category, theme)] = {
+            slashArticle: String(entry?.slashArticle || '').trim(),
+            japaneseArticle: String(entry?.japaneseArticle || '').trim()
+        };
+    });
+    return out;
+}
+
+async function loadLocalReadingModes() {
+    try {
+        const res = await fetch('./content/data/reading-local-modes.json', { cache: 'no-store' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const json = await res.json();
+        LOCAL_READING_MODES = normalizeLocalReadingModes(json);
+        console.info('[ReadingLocalModes] Loaded reading-local-modes.json', {
+            count: Object.keys(LOCAL_READING_MODES).length
+        });
+    } catch (err) {
+        LOCAL_READING_MODES = { ...DEFAULT_LOCAL_READING_MODES };
+        console.warn('[ReadingLocalModes] reading-local-modes.json not loaded.', err);
+    }
+}
+
+const localReadingModesFetch = loadLocalReadingModes();
+
+function getLocalReadingModes(category, theme) {
+    return LOCAL_READING_MODES[buildReadingKey(category, theme)] || { slashArticle: '', japaneseArticle: '' };
+}
+
+function getLocalPronunciationExplain(category, theme) {
+    const categoryKey = normalizeTextKey(category);
+    const themeKey = normalizeTextKey(theme);
+    const byTheme = LOCAL_PRONUNCIATION_EXPLAIN.byThemeKey?.[`${categoryKey}::${themeKey}`] || '';
+    const byCategory = LOCAL_PRONUNCIATION_EXPLAIN.byCategory?.[categoryKey] || '';
+    return byTheme || byCategory || '';
+}
+
+function getGrammarExplainText(categoryKeyRaw, grammarData, grammarManual) {
+    const categoryKey = normalizeTextKey(categoryKeyRaw);
+    const manualMap = grammarManual && typeof grammarManual === 'object' ? grammarManual : {};
+
+    const exactManual = manualMap[categoryKeyRaw];
+    if (String(exactManual || '').trim()) return String(exactManual);
+
+    const normalizedManual = Object.entries(manualMap).find(([k]) => normalizeTextKey(k) === categoryKey)?.[1];
+    if (String(normalizedManual || '').trim()) return String(normalizedManual);
+
+    const fromExam = (Array.isArray(grammarData) ? grammarData : [])
+        .filter(item => normalizeTextKey(item?.category) === categoryKey)
+        .map(item => String(item?.explanation || '').trim())
+        .filter(Boolean);
+
+    if (fromExam.length > 0) {
+        return Array.from(new Set(fromExam)).join('<br><br>');
+    }
+
+    return '';
+}
+
+function renderContent() {
+    const area = document.getElementById('main-content-area');
+    if (!portalData) return;
+    const data = currentApp === 'grammar' ? getActiveGrammarData() : portalData[currentApp];
+    if(!data) return;
+    const isEx = (currentApp === 'pronunciation' ? currentModeIdx === 2 : currentModeIdx === 1);
+    const shouldFilterTheme = (!isEx) || (currentApp === 'pronunciation' && currentModeIdx === 2 && currentTheme);
+    const filtered = data.filter(d => {
+        if ((d.lesson || d.category) !== currentSubKey) return false;
+        if (!shouldFilterTheme) return true;
+        return (!currentTheme || d.theme === currentTheme || d.point === currentTheme || d.subcategory === currentTheme || currentApp === 'vocabulary');
+    });
+    
+    if (currentApp === 'pronunciation') {
+        if (currentModeIdx === 0) {
+            const categoryKey = normalizeTextKey(currentSubKey);
+            const themeKey = normalizeTextKey(currentTheme);
+            const hasExplain = v => String(v || '').trim();
+            const expFromLocal = getLocalPronunciationExplain(currentSubKey, currentTheme);
+
+            // Prefer explain from selected item using normalized keys, then category-level data.
+            const expFromSelected = data.find(i =>
+                normalizeTextKey(i.category) === categoryKey &&
+                (normalizeTextKey(i.point) === themeKey || normalizeTextKey(i.subcategory) === themeKey) &&
+                hasExplain(i.explain)
+            )?.explain || "";
+            const expFromFiltered = filtered.find(i => hasExplain(i.explain))?.explain || "";
+            const expFromCategory = data.find(i => normalizeTextKey(i.category) === categoryKey && hasExplain(i.explain))?.explain || "";
+
+            const explainIndex = portalData.pronunciationExplainIndex || { byCategory: {}, byPoint: {}, bySubcategory: {} };
+            const expFromIndexPoint = explainIndex.byPoint?.[`${categoryKey}::${themeKey}`] || "";
+            const expFromIndexSub = explainIndex.bySubcategory?.[`${categoryKey}::${themeKey}`] || "";
+            const expFromIndexCategory = explainIndex.byCategory?.[categoryKey] || "";
+
+            const manuals = portalData.pronunciationManual || {};
+            const expFromManual = manuals[categoryKey] || "";
+
+            const explainCandidates = [
+                { source: 'local', text: expFromLocal },
+                { source: 'selected', text: expFromSelected },
+                { source: 'filtered', text: expFromFiltered },
+                { source: 'category', text: expFromCategory },
+                { source: 'index.point', text: expFromIndexPoint },
+                { source: 'index.subcategory', text: expFromIndexSub },
+                { source: 'index.category', text: expFromIndexCategory },
+                { source: 'index.explain', text: expFromManual }
+            ];
+            const winner = explainCandidates.find(x => String(x.text || '').trim());
+            const explainText = winner ? winner.text : "Coming soon!";
+
+            console.info('[PronExplain] Resolve', {
+                category: currentSubKey,
+                theme: currentTheme,
+                categoryKey,
+                themeKey,
+                hasData: Array.isArray(data),
+                dataCount: Array.isArray(data) ? data.length : 0,
+                filteredCount: Array.isArray(filtered) ? filtered.length : 0,
+                selectedFound: !!expFromSelected,
+                categoryFound: !!expFromCategory,
+                indexPointFound: !!expFromIndexPoint,
+                indexSubFound: !!expFromIndexSub,
+                indexCategoryFound: !!expFromIndexCategory,
+                localFound: !!expFromLocal,
+                manualFound: !!expFromManual,
+                selectedSource: winner ? winner.source : 'fallback.comingSoon'
+            });
+
+            // area.innerHTML = `<div class="word-card p-8 text-slate-700 text-left leading-normal whitespace-pre-line">${explainText}</div>`;
+            area.innerHTML = `<div class="word-card p-8 text-slate-700 text-left leading-normal whitespace-pre-line">${explainText}</div>`;
+        }
+        else if (currentModeIdx === 1) {
+            const vids = [];
+            filtered.forEach(item => { if (item.videos) item.videos.forEach(v => { if (!vids.includes(v)) vids.push(v); }); });
+            area.innerHTML = vids.length > 0
+                ? `<div class="flex flex-col gap-4">${vids.map(v => `<div class="bg-white border border-slate-100 rounded-2xl p-3 overflow-hidden shadow-sm"><div class="w-full overflow-hidden">${v}</div></div>`).join('')}</div>`
+                : `<p class="py-10 font-bold">No videos available.</p>`;
+        }
+        else { 
+            area.innerHTML = `<div class="space-y-4">` + filtered.map((item, idx) => { 
+                const card = getPronunciationCardFields(item);
+                const localTranslation = getLocalPronunciationTranslation({
+                    category: item?.category,
+                    subcategory: item?.subcategory,
+                    point: item?.point,
+                    word: card.word
+                }) || card.translation || '';
+                const ttsWord = card.word.replace(/'/g, "\\'");
+                return `<div class="word-card p-5 pr-16 shadow-sm relative"><button onclick="playTTS('${ttsWord}')" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-slate-50 text-slate-400 flex items-center justify-center"><i data-lucide="volume-2" class="w-5 h-5"></i></button><div class="ph-card-content flex-1 min-w-0"><div class="text-2xl font-black text-slate-900 tracking-tight mb-1" onclick="playTTS('${ttsWord}')">${card.word}</div><div class="text-[12px] text-slate-500 font-semibold leading-relaxed mb-1">${card.symbol}</div><div class="text-[12px] text-slate-500 font-semibold leading-relaxed">${card.katakana}</div><div class="text-[10px] font-black text-kepty-orange text-left mt-2">${localTranslation}</div></div></div>`; 
+            }).join('') + `</div>`; 
+        }
+    } else if (currentModeIdx === 0) {
+        if (currentApp === 'chunk') { 
+            let h = filtered[0]?.point ? `<section class="bg-slate-100 p-5 rounded-[24px] border border-slate-200 mb-6 text-left text-sm font-bold text-slate-700 leading-normal"><div class="flex items-center gap-2 mb-2"><span class="text-[10px] font-black bg-slate-700 text-white px-2 py-0.5 rounded tracking-widest uppercase">Point</span></div>${filtered[0].point}</section>` : ''; 
+            area.innerHTML = h + `<div class="grid grid-cols-1 md:grid-cols-2 gap-3">` + filtered.map((item, i) => `<div class="flip-card-chunk" onclick="this.classList.toggle('flipped')" ontouchstart=""><div class="flip-card-inner"><div class="flip-card-front"><span class="absolute top-2 left-3 text-[10px] font-black text-kepty-orange opacity-60 font-mono">#${i+1}</span><div class="absolute bottom-2 right-2 text-slate-400 opacity-40"><i data-lucide="hand" class="w-4 h-4"></i></div><p class="text-base font-bold text-left leading-tight">${item.sentence}</p></div><div class="flip-card-back"><button onclick="event.stopPropagation(); playTTS('${item.answer.replace(/'/g, "\\'")}');" class="absolute top-2 right-3 p-1.5 hover:bg-emerald-100 rounded-lg text-emerald-600 transition-colors"><i data-lucide="volume-2" class="w-4 h-4"></i></button><span class="absolute top-2 left-3 text-[10px] font-black text-emerald-600 opacity-60 font-mono">#${i+1}</span><span class="text-[10px] text-emerald-600 font-bold block text-left">Answer</span><p class="text-base font-bold text-slate-800 text-left leading-tight">${item.answer}</p><div class="absolute bottom-2 right-2 text-slate-400 opacity-40"><i data-lucide="hand" class="w-4 h-4"></i></div></div></div></div>`).join('') + `</div>`; 
+        }
+        else if (currentApp === 'shadowing') { 
+            const item = filtered[0]; if (!item) return; 
+            const modeIdx = shadowingMode === 'script' ? 0 : (shadowingMode === 'sound' ? 1 : 2);
+            const localJapanese = getLocalShadowingJapanese(item.lesson, item.theme);
+            const bodyText = shadowingMode === 'script'
+                ? item.text
+                : (shadowingMode === 'sound'
+                    ? generateHighlightedHtml(item.text, item.highlights)
+                    : (item.japanese || localJapanese || 'No Japanese text available.'));
+            area.innerHTML = `<div class="shadowing-content-card bg-white rounded-[24px] border border-f1f5f9 overflow-hidden"><div class="flex items-center justify-between gap-3 p-4 md:p-6 border-b border-f1f5f9"><div class="mode-switch-container flex-1 min-w-0 max-w-[280px] md:max-w-[330px]"><div class="mode-slider" style="width:calc(100%/3 - 2px); transform:translateX(${modeIdx * 100}%);"></div><div onclick="shadowingMode='script'; renderContent();" class="mode-switch-btn text-[11px] md:text-[12px] ${shadowingMode==='script'?'active':''}">Script</div><div onclick="shadowingMode='sound'; renderContent();" class="mode-switch-btn text-[11px] md:text-[12px] ${shadowingMode==='sound'?'active':''}">Points</div><div onclick="shadowingMode='japanese'; renderContent();" class="mode-switch-btn text-[11px] md:text-[12px] ${shadowingMode==='japanese'?'active':''}">Japanese</div></div><button id="sh-play-btn" onclick="playAudio('${item.lesson}_${item.theme}', this)" class="w-10 h-10 md:w-11 md:h-11 rounded-full bg-slate-50 text-kepty-orange flex items-center justify-center shadow-sm active:scale-90 transition-all flex-shrink-0"><i data-lucide="volume-2"></i></button></div><div class="p-6 text-left"><p class="card-inner-title" style="color:var(--kepty-orange);">${shadowingMode==='script'?'Script':(shadowingMode==='sound'?'Sound Changes':'Japanese')}</p>${shadowingMode==='sound' ? `<div class="flex flex-wrap gap-2 mb-6 text-left">${HL_TYPES.map(t => `<div class="flex items-center gap-1 text-[9px] font-bold text-slate-400"><div class="w-2.5 h-2.5 rounded-[3px]" style="background:${HL_COLORS[t]}"></div> ${t.split(' ')[0]}</div>`).join('')}</div>` : ''}<div class="text-slate-700 text-lg leading-[1.8] font-medium whitespace-pre-wrap text-left">${bodyText}</div></div></div>`; 
+        }
+        else if (currentApp === 'topicTalk') { 
+            if (examIdx >= filtered.length) { area.innerHTML = `<div class="kepty-card flex items-center justify-center"><p class="text-4xl font-black text-kepty-orange tracking-tight mb-8">Complete!</p><div class="mt-4"><span onclick="examIdx=0; renderContent();" class="restart-link">Restart</span></div></div>`; lucide.createIcons(); return; }
+            const item = filtered[examIdx]; if(!item) return; 
+            area.innerHTML = generateProgressDotsHtml(filtered.length, examIdx) + `<div class="kepty-card flex-1 flex flex-col justify-between"><div class="mb-2"><span class="text-[10px] font-black text-kepty-orange uppercase bg-kepty-light-orange px-2 py-0.5 rounded-md">${item.theme}</span></div><p class="text-base md:text-lg font-semibold text-slate-800 mb-8 whitespace-pre-wrap text-center">${item.training_topic}</p><div class="flex flex-col items-center gap-6 mt-6"><div class="voice-wave"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div><div class="flex items-center justify-center gap-6 w-full px-10"><button onclick="examIdx = Math.max(0, examIdx-1); renderContent();" class="nav-icon-btn p-4 bg-white/50 text-slate-400 rounded-full shadow-sm ${examIdx===0?'invisible':''} active:scale-95"><i data-lucide="chevron-left"></i></button><div class="exam-mic-btn" onclick="toggleGenericRecord()"><i data-lucide="mic"></i></div><button onclick="topicTalkNext(${filtered.length})" class="nav-icon-btn p-4 next-btn-orange rounded-full shadow-lg active:scale-95"><i data-lucide="chevron-right"></i></button></div></div></div>`; 
+        }
+        else if (currentApp === 'reading') { 
+            const item = filtered[0]; if (!item) return; 
+            const localModes = getLocalReadingModes(item.category, item.theme);
+            const slashText = item.slashArticle || localModes.slashArticle || '';
+            const japaneseText = item.japaneseArticle || localModes.japaneseArticle || '';
+            const articleText = readingViewMode === 'reading'
+                ? (item.article || '')
+                : (readingViewMode === 'slash' ? slashText : japaneseText);
+            area.innerHTML = `<section class="space-y-4 text-left mb-10"><div class="flex items-center gap-2 mb-4"><div class="w-1 h-6 bg-kepty-orange rounded-full"></div><h2 class="text-lg font-black text-slate-900 tracking-tight">Words and Phrases</h2></div><div class="grid grid-cols-1 md:grid-cols-2 gap-3">` + 
+            item.keywords.map(k => `<div class="word-card p-4 shadow-sm border border-slate-100 flex flex-col"><div class="flex justify-between items-start mb-1"><h4 class="text-xl font-black text-slate-900">${k.word}</h4><div class="flex flex-col items-end gap-1"><span class="text-[9px] font-black text-kepty-orange uppercase bg-kepty-light-orange px-1.5 py-0.5 rounded">${k.pos}</span><button onclick="playTTS('${k.word.replace(/'/g, "\\'")}')" class="w-9 h-9 rounded-full bg-slate-50 text-slate-400 flex items-center justify-center"><i data-lucide="volume-2" class="w-5 h-5"></i></button></div></div><p class="text-[10px] text-slate-400 font-mono mb-2">${k.phonetic}</p><p class="font-bold text-sm text-slate-600">${k.meaning}</p></div>`).join('') + `</div></section><section class="text-left"><div class="flex items-center justify-between mb-4"><div class="flex items-center gap-2"><div class="w-1 h-6 bg-kepty-orange rounded-full"></div><h2 class="text-lg font-black text-slate-900 tracking-tight">Article</h2></div><div class="mode-switch-container w-[280px]"><div class="mode-slider" style="width:calc(100%/3 - 2px); transform:translateX(${readingViewMode==='reading'?0:(readingViewMode==='slash'?100:200)}%);"></div><div onclick="readingViewMode='reading'; renderContent();" class="mode-switch-btn ${readingViewMode==='reading'?'active':''}">Reading</div><div onclick="readingViewMode='slash'; renderContent();" class="mode-switch-btn ${readingViewMode==='slash'?'active':''}">Slash Reading</div><div onclick="readingViewMode='japanese'; renderContent();" class="mode-switch-btn ${readingViewMode==='japanese'?'active':''}">Japanese</div></div></div><div class="word-card p-6 md:p-10 shadow-sm border border-slate-100 leading-[1.8] text-slate-700 font-medium whitespace-pre-wrap text-lg">${articleText}</div></section>`; 
+        }
+        else if (currentApp === 'speaking') { 
+            const item = filtered[0]; if (!item) return; 
+            area.innerHTML = `<div class="word-card p-5 shadow-sm text-left border border-slate-100 flex flex-col gap-2">
+                    <h4 class="text-lg font-bold text-slate-800 mb-0 tracking-tight">${item.point}</h4>
+                    <section class="bg-slate-100 px-4 py-3 rounded-[24px] border border-slate-200 text-sm font-medium text-slate-700 leading-normal text-left whitespace-pre-line flex flex-col items-start justify-center">
+                        <div class="flex items-center justify-start w-full">
+                            <span class="text-[10px] font-black bg-slate-700 text-white px-2 py-0.5 rounded tracking-widest uppercase">Point</span>
+                        </div>
+                        ${item.background.trim()}
+                    </section>
+                    <div class="bg-slate-50 px-4 py-5 rounded-xl border border-slate-100 text-left">
+                        <p class="text-[9px] font-black text-kepty-orange uppercase tracking-wider mb-2">Example Sentences</p>
+                        <p class="text-sm text-slate-600 whitespace-pre-line leading-relaxed" style="font-style: normal;">${item.example}</p>
+                    </div>
+                </div>`; 
+        }
+        else if (currentApp === 'vocabulary') { 
+            area.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">` + filtered.map((w, i) => `<div class="flip-card-voc" onclick="this.classList.toggle('flipped')" ontouchstart=""><div class="flip-card-inner"><div class="flip-card-front"><span class="absolute top-2 left-3 text-[10px] font-black text-kepty-orange opacity-70 font-mono">#${i+1}</span><button onclick="event.stopPropagation(); playTTS('${w.word.replace(/'/g, "\\'")}')" class="absolute top-2 right-3 w-9 h-9 rounded-full bg-slate-50 text-slate-400 flex items-center justify-center"><i data-lucide="volume-2" class="w-5 h-5"></i></button><h3 class="text-2xl font-black text-slate-900 mb-0.5 tracking-tight">${w.word}</h3><div class="flex items-center gap-2 text-slate-400 font-mono text-xs"><span>${w.pronunciation}</span><span class="opacity-30">|</span><span class="font-semibold">${w.pos}</span></div><div class="absolute bottom-2 right-2 text-slate-400 opacity-40"><i data-lucide="hand" class="w-4 h-4"></i></div></div><div class="flip-card-back"><h3 class="text-sm font-bold mb-2 text-slate-800">${w.meaning}</h3><div class="bg-black/5 p-3 rounded-xl text-[11px] italic text-slate-600 leading-relaxed overflow-y-auto max-h-[80px]">${w.example.replace(new RegExp(`(${w.word})`, 'gi'), '<strong>$1</strong>')}</div><div class="absolute bottom-2 right-2 text-slate-400 opacity-40"><i data-lucide="hand" class="w-4 h-4"></i></div></div></div></div>`).join('') + `</div>`; 
+        }
+        else {
+            const explainText = getGrammarExplainText(currentSubKey, getActiveGrammarData(), getActiveGrammarManual());
+            area.innerHTML = `<div class="word-card p-8 text-slate-700 text-left leading-snug">${explainText || "No Explanation Prepared."}</div>`;
+        }
+    } else renderExamStep(filtered);
+    lucide.createIcons();
+}
+
+function topicTalkNext(len) { if(examIdx < len) { examIdx++; renderContent(); } }
+
+function renderExamStep(pool) {
+    const area = document.getElementById('main-content-area'); if (currentApp === 'shadowing' || currentApp === 'topicTalk' || currentApp === 'reading') return;
+    let maxIdx = (currentApp === 'chunk') ? 30 : pool.length;
+    if (examIdx >= maxIdx) { 
+        const correctCount = examResults.filter(r => r.isCorrect).length;
+        area.innerHTML = `<div class="kepty-card flex-1 flex flex-col justify-center items-center"><p class="text-4xl font-black text-kepty-orange tracking-tight text-center mb-8">Complete!</p><div class="mt-4 mb-8"><span onclick="examIdx=0; examResults=[]; renderContent();" class="restart-link">Restart</span></div>${(currentApp === 'vocabulary' || currentApp === 'grammar') ? `<div class="text-left w-full border-t border-slate-100 pt-6"><div class="flex items-center justify-between mb-4 px-2"><p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Review Results</p><p class="text-xs font-black text-emerald-600">Correct: ${correctCount}/${pool.length}</p></div><div class="max-h-[300px] overflow-y-auto no-scrollbar">${examResults.map(r => `<div class="review-item"><div class="flex items-start gap-2"><div class="w-4 h-4 mt-1 flex-shrink-0 flex items-center justify-center rounded-full ${r.isCorrect ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600'}"><i data-lucide="${r.isCorrect ? 'check' : 'x'}" class="w-3 h-3"></i></div><div class="flex-1"><div class="q tracking-tight">${r.q}</div><div class="a ${r.isCorrect ? 'text-emerald-600' : 'text-slate-400'}">${r.correctA}</div>${!r.isCorrect ? `<div class="text-rose-600 text-[10px] font-bold">You selected: ${r.userSel}</div>` : ''}</div></div></div>`).join('')}</div></div>` : ''}</div>`; lucide.createIcons(); return; 
+    }
+    if (currentApp === 'vocabulary' || currentApp === 'grammar') {
+        const it = pool[examIdx]; let ops = [], qTitle = (currentApp === 'vocabulary') ? it.word : it.question;
+        if (currentApp === 'vocabulary') { let distractors = portalData.vocabulary.filter(w => w.meaning !== it.meaning).map(w => w.meaning); distractors.sort(() => Math.random() - 0.5); ops = [it.meaning, ...distractors.slice(0, 3)].sort(() => Math.random() - 0.5); } else { ops = [it.answer, it.option2, it.option3, it.option4].filter(Boolean).sort(() => Math.random() - 0.5); }
+        area.innerHTML = generateProgressDotsHtml(pool.length, examIdx, currentApp === 'vocabulary' ? 20 : 10) + `<div class="mb-4 text-left ${examIdx===0?'invisible':''}"><button onclick="examIdx--; renderContent();" class="flex items-center gap-1 text-slate-400 font-bold text-xs"><i data-lucide="arrow-left" class="w-3 h-3"></i> Back</button></div><div class="text-center mb-8 px-2"><h2 class="text-base md:text-lg font-semibold text-slate-900 tracking-tight leading-snug">${qTitle}</h2></div><div id="quiz-options-grid" class="grid grid-cols-1 gap-3 max-w-xl mx-auto">${ops.map(o => `<button onclick="handleExamAnswer('${qTitle.replace(/'/g, "\\'")}', '${o.replace(/'/g, "\\'")}', '${(currentApp==='vocabulary'?it.meaning:it.answer).replace(/'/g, "\\'")}', this)" class="quiz-option-btn text-left"><div class="quiz-badge"></div>${o}</button>`).join('')}</div>`;
+    } else if (currentApp === 'chunk') { 
+        const ex = pool[0][`exam_${currentExamNum}`];
+        area.innerHTML = generateProgressDotsHtml(30, examIdx) + `<p class="text-sm font-bold text-slate-700 mb-4 px-1 text-center">以下の日本語を英語に訳してください。</p><div class="kepty-card flex-1 flex flex-col justify-between"><div class="mt-1 mb-4 px-2 text-center flex-1 flex justify-center items-center"><p class="text-base md:text-lg font-semibold text-slate-800 leading-relaxed">${ex[examIdx] || "No Data"}</p></div><div class="voice-wave"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div><div class="flex items-center justify-center gap-6 mt-6 px-10"><button onclick="examIdx = Math.max(0, examIdx-1); renderContent();" class="nav-icon-btn p-4 bg-white/50 text-slate-400 rounded-full shadow-sm ${examIdx===0?'invisible':''} active:scale-95"><i data-lucide="chevron-left"></i></button><div class="exam-mic-btn" onclick="toggleGenericRecord()"><i data-lucide="mic"></i></div><button onclick="examIdx++; renderContent();" class="nav-icon-btn p-4 next-btn-orange rounded-full shadow-lg active:scale-95"><i data-lucide="chevron-right"></i></button></div></div>`; 
+    }
+    else if (currentApp === 'speaking' || currentApp === 'pronunciation') { 
+        const it = pool[examIdx];
+        const speakingRuleHtml = currentApp==='speaking' ? `<section class="bg-slate-100 px-4 py-3 rounded-[24px] border border-slate-200 text-sm font-medium text-slate-700 leading-normal text-left whitespace-pre-line mb-1"><div class="flex items-center gap-2 mb-2"><span class="text-[10px] font-black bg-slate-700 text-white px-2 py-0.5 rounded tracking-widest uppercase">Rule</span></div>${it.rules || ''}</section>` : '';
+        const mainText = currentApp === 'speaking'
+            ? (it.assignment || it.example || it.point || '')
+            : (it.word || '');
+        const controls = currentApp === 'pronunciation'
+            ? `<div class="flex items-center justify-center gap-6 mt-6 px-10"><button onclick="examIdx = Math.max(0, examIdx-1); renderContent();" class="nav-icon-btn p-4 bg-white/50 text-slate-400 rounded-full shadow-sm ${examIdx===0?'invisible':''} active:scale-95"><i data-lucide="chevron-left"></i></button><button onclick="examIdx++; renderContent();" class="nav-icon-btn p-4 next-btn-orange rounded-full shadow-lg active:scale-95"><i data-lucide="chevron-right"></i></button></div>`
+            : `<div class="voice-wave"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div><div class="flex items-center justify-center gap-6 mt-6 px-10"><button onclick="examIdx = Math.max(0, examIdx-1); renderContent();" class="nav-icon-btn p-4 bg-white/50 text-slate-400 rounded-full shadow-sm ${examIdx===0?'invisible':''} active:scale-95"><i data-lucide="chevron-left"></i></button><div class="exam-mic-btn" onclick="toggleGenericRecord()"><i data-lucide="mic"></i></div><button onclick="examIdx++; renderContent();" class="nav-icon-btn p-4 next-btn-orange rounded-full shadow-lg active:scale-95"><i data-lucide="chevron-right"></i></button></div>`;
+        const progressHtml = currentApp === 'pronunciation' ? '' : generateProgressDotsHtml(pool.length, examIdx);
+        area.innerHTML = progressHtml + `<div class="kepty-card flex-1 flex flex-col justify-between gap-4">${speakingRuleHtml}<div class="px-2 pt-1 text-center mb-6 flex-1 flex justify-center items-center"><p class="text-base md:text-lg font-semibold text-slate-900 leading-relaxed tracking-tight text-center whitespace-pre-line">${mainText}</p></div>${controls}</div>`; 
+    }
+    lucide.createIcons();
+}
+function handleExamAnswer(q, sel, cor, btn) { 
+    const grid = document.getElementById('quiz-options-grid'); grid.style.pointerEvents = 'none'; 
+    const isCor = (sel === cor); examResults.push({ q: q, userSel: sel, correctA: cor, isCorrect: isCor }); 
+    grid.querySelectorAll('.quiz-option-btn').forEach(b => { 
+        const badge = b.querySelector('.quiz-badge');
+        if (b.innerText.trim() === cor) { b.style.border = "2px solid #10b981"; b.style.background = "#ecfdf5"; badge.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i>'; badge.className = "quiz-badge correct"; } 
+        else if (b === btn && !isCor) { b.style.border = "2px solid #ef4444"; b.style.background = "#fef2f2"; badge.innerHTML = '<i data-lucide="x" class="w-4 h-4"></i>'; badge.className = "quiz-badge incorrect"; } 
+    }); 
+    lucide.createIcons(); setTimeout(() => { examIdx++; renderContent(); }, 1500); 
+}
+async function toggleGenericRecord() {
+    if (!mediaRecorder || mediaRecorder.state === "inactive") {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream); audioChunks = [];
+        mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+        mediaRecorder.onstop = async () => {
+            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+            const reader = new FileReader(); reader.readAsDataURL(audioBlob);
+            reader.onloadend = () => {
+                const base64data = reader.result.split(',')[1];
+                const payload = { userId: userId, app: currentApp, theme: currentTheme || currentSubKey, audioBase64: base64data };
+                fetch(GAS_WEB_APP_URL, { method: "POST", body: JSON.stringify(payload) }).then(res => res.json()).then(data => console.log("Saved:", data));
+            };
+        };
+        mediaRecorder.start();
+    } else { mediaRecorder.stop(); }
+}
+function toggleRecord(id) {
+    const btn = document.getElementById(`phbtn-${id}`), card = document.getElementById(`phcard-${id}`), lbl = document.getElementById(`phlabel-${id}`);
+    if (!btn.classList.contains('recording')) { btn.classList.add('recording'); toggleGenericRecord(); }
+    else { btn.classList.remove('recording'); toggleGenericRecord(); card.classList.add('card-judging'); setTimeout(() => { phCompletedIds.add(id); card.classList.add('success-mode'); lbl.classList.add('show'); setTimeout(() => { lbl.classList.remove('show'); card.classList.remove('card-judging'); renderContent(); }, 1500); }, 300); }
+}
+function updatePhProgress(cat) { const f = portalData.pronunciation.filter(d => (d.category || d.lesson) === cat); document.getElementById('ph-progress-dots').innerHTML = Array.from({length: f.length}).map((_, i) => `<div class="progress-dot ${phCompletedIds.has(cat + '-' + i) ? 'filled' : ''}"></div>`).join(''); }
+// Audio source setting: 'local' or 'drive' (set via admin-audio.html)
+const AUDIO_SOURCE = localStorage.getItem('keptyAudioSource') || 'local';
+// Local audio: lesson name -> folder name
+const DEFAULT_LOCAL_AUDIO_MAP = {
+    "TOEIC #Part3": "part3.01",
+    "TED #Grit": "GRIT.02",
+    "TED #30 days": "try.03",
+    "TED #original thinkers": "ogthinkers.04",
+    "First Step": "firststep.05"
+};
+const LEGACY_AUDIO_MAP_KEYS = {
+    "part3": "TOEIC #Part3",
+    "GRIT": "TED #Grit",
+    "30 days": "TED #30 days",
+    "Original thinkers": "TED #original thinkers"
+};
+function buildLocalAudioMap() {
+    const stored = JSON.parse(localStorage.getItem('keptyLocalAudioMap') || 'null');
+    const map = { ...DEFAULT_LOCAL_AUDIO_MAP };
+    if (stored && typeof stored === 'object') {
+        Object.assign(map, stored);
+        Object.entries(LEGACY_AUDIO_MAP_KEYS).forEach(([legacyKey, newKey]) => {
+            if (!map[newKey] && stored[legacyKey]) map[newKey] = stored[legacyKey];
+            delete map[legacyKey];
+        });
+    }
+    localStorage.setItem('keptyLocalAudioMap', JSON.stringify(map));
+    return map;
+}
+const LOCAL_AUDIO_MAP = buildLocalAudioMap();
+function getLocalAudioUrl(lesson, theme) {
+    // Case-insensitive lookup: spreadsheet may say "TOEIC Part3" but map has "Toeic part3"
+    const mapKey = Object.keys(LOCAL_AUDIO_MAP).find(k => k.toLowerCase() === lesson.toLowerCase());
+    const folder = mapKey ? LOCAL_AUDIO_MAP[mapKey] : undefined;
+    if (!folder) { console.warn('[Audio] No folder mapped for lesson:', lesson, 'Available keys:', Object.keys(LOCAL_AUDIO_MAP)); return ''; }
+    // Use explicit theme-to-file mapping if available
+    const themeMap = JSON.parse(localStorage.getItem('keptyThemeToFileMap') || 'null') || {};
+    let fileNum = null;
+    if (themeMap[lesson] && themeMap[lesson][theme]) {
+        fileNum = themeMap[lesson][theme];
+    }
+    // Fallback: derive file number from theme order in portalData
+    if (!fileNum && portalData && portalData.shadowing) {
+        const lessonThemes = [...new Set(
+            portalData.shadowing.filter(d => d.lesson === lesson).map(d => d.theme)
+        )].filter(Boolean);
+        const idx = lessonThemes.indexOf(theme);
+        if (idx >= 0) fileNum = idx + 1;
+    }
+    if (!fileNum) { console.warn('[Audio] No file number resolved for lesson:', lesson, 'theme:', theme); return ''; }
+    const url = `content/audios/${folder}/${fileNum}.mp3`;
+    console.log('[Audio] Resolved URL:', url);
+    return url;
+}
+function getDriveAudioUrl() {
+    if (portalData && portalData.shadowing) {
+        const lessonKey = String(currentSubKey || '').trim();
+        const themeKey = String(currentTheme || '').trim();
+        const item = portalData.shadowing.find(d => String(d.theme || '').trim() === themeKey && String(d.lesson || '').trim() === lessonKey);
+        if (item && item.audioUrl) return item.audioUrl;
+    }
+    return '';
+}
+// Shadowing audio: pause/resume for same, restart for different
+let currentAudioIdx = null;
+let currentAudioUrlLink = "";
+let currentAudioTime = 0;
+function playAudio(audioId, btn) {
+    console.log('[Audio] playAudio called. audioId:', audioId, 'btn:', btn, 'AUDIO_SOURCE:', AUDIO_SOURCE);
+    const player = document.getElementById('global-player');
+    // Choice-based: use whichever source the admin selected
+    let audioUrl = '';
+    if (AUDIO_SOURCE === 'local') {
+        audioUrl = getLocalAudioUrl(currentSubKey, currentTheme);
+    } else {
+        audioUrl = getDriveAudioUrl();
+        if (!audioUrl) {
+            // GitHub Pages commonly starts with drive source and empty drive links; fallback keeps playback available.
+            audioUrl = getLocalAudioUrl(currentSubKey, currentTheme);
+            if (audioUrl) {
+                console.warn('[Audio] Drive URL missing, using local fallback. Lesson:', currentSubKey, 'Theme:', currentTheme);
+            }
+        }
+    }
+    // 異なる番号の場合
+    if (!audioUrl) {
+        console.warn('[Audio] No audio URL available. Source:', AUDIO_SOURCE, 'Lesson:', currentSubKey, 'Theme:', currentTheme);
+        return;
+    }
+    if (currentAudioIdx !== audioId) {
+        player.pause();
+        player.currentTime = 0;
+        player.src = audioUrl;
+        currentAudioIdx = audioId;
+        currentAudioUrl = audioUrl;
+        currentAudioTime = 0;
+        player.play().catch(err => console.warn('[Audio] Playback failed:', err.message, 'URL:', audioUrl));
+        btn.innerHTML = '<i data-lucide="pause"></i>';
+    } else {
+        // 同じ番号の場合
+        if (!player.paused) {
+            currentAudioTime = player.currentTime;
+            player.pause();
+            btn.innerHTML = '<i data-lucide="volume-2"></i>';
+        } else {
+            player.currentTime = currentAudioTime;
+            player.play().catch(err => console.warn('[Audio] Resume failed:', err.message));
+            btn.innerHTML = '<i data-lucide="pause"></i>';
+        }
+    }
+    player.onended = () => {
+        btn.innerHTML = '<i data-lucide="volume-2"></i>';
+        lucide.createIcons();
+        currentAudioTime = 0;
+    };
+    lucide.createIcons();
+}
+
+
+
+function playTTS(text) { window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = 'en-US'; u.rate = 0.9; window.speechSynthesis.speak(u); }
+function normalizeHighlightType(type) {
+    const t = String(type || '').trim().toLowerCase();
+    if (t === 'special' || t === 'special sound changes') return 'Special Sound Changes';
+    if (t === 'linking') return 'Linking';
+    if (t === 'reduction') return 'Reduction';
+    if (t === 'flap t') return 'Flap T';
+    return type;
+}
+function generateHighlightedHtml(text, hls) {
+    if (!hls || hls.length === 0) return text;
+    let html = text;
+    hls.forEach((hl, idx) => {
+        const normalizedType = normalizeHighlightType(hl.type);
+        const color = HL_COLORS[normalizedType] || 'var(--hl-yellow)';
+        const regex = new RegExp(`(${hl.target})`, 'g');
+        html = html.replace(regex, `<span class="hl-overlay" onclick="openShadowModal(${idx})" style="text-decoration: underline; text-decoration-color: ${color}; text-underline-offset: 4px; cursor: pointer;">$1</span>`);
+    });
+    return html;
+}
+function openShadowModal(idx) {
+    const item = portalData.shadowing.find(d => d.theme === currentTheme && d.lesson === currentSubKey);
+    if (!item || !item.highlights[idx]) return;
+    const hl = item.highlights[idx];
+    const normalizedType = normalizeHighlightType(hl.type);
+    const color = BOLD_COLORS[normalizedType] || 'var(--kepty-orange)';
+    document.getElementById('modal-bar').style.background = color;
+    const titleEl = document.getElementById('modal-title-text'); titleEl.style.color = color; titleEl.innerText = normalizedType;
+    document.getElementById('modal-target').innerText = hl.target; document.getElementById('modal-desc').innerText = hl.explanation;
+    document.getElementById('detail-modal').style.display = 'flex';
+}
+
+function runWelcomeOverlay() {
+    const overlay = document.getElementById('welcome-overlay'), msgEl = document.getElementById('welcome-message');
+    const hasSeenWelcome = sessionStorage.getItem('keptyWelcomeSeen') === '1';
+    const welcomeTotalMs = 0;
+    const fadeDurationMs = 0;
+    const textRevealDelayMs = 0;
+    if (hasSeenWelcome) {
+        overlay.style.display = 'none';
+        const menuTrigger = document.querySelector('.menu-pill-trigger');
+        if (menuTrigger) menuTrigger.classList.add('ready');
+        Promise.all([initialFetch, localExplainFetch, localGrammarFetch, localShadowingJapaneseFetch, localReadingModesFetch, localPronTranslationsFetch]).then(([data]) => {
+            portalData = data;
+            switchApp('vocabulary');
+            lucide.createIcons();
+        });
+        return;
+    }
+    setTimeout(() => { msgEl.style.opacity = '1'; }, textRevealDelayMs);
+
+    // Keep total intro duration at 2 seconds including fade-out animation.
+    const minDisplayTime = new Promise(resolve => setTimeout(resolve, Math.max(0, welcomeTotalMs - fadeDurationMs)));
+    
+    Promise.all([initialFetch, localExplainFetch, localGrammarFetch, localShadowingJapaneseFetch, localReadingModesFetch, localPronTranslationsFetch, minDisplayTime]).then(([data]) => {
+        portalData = data;
+        overlay.style.opacity = '0'; 
+        setTimeout(() => { 
+            const menuTrigger = document.querySelector('.menu-pill-trigger');
+            if (menuTrigger) menuTrigger.classList.add('ready');
+            sessionStorage.setItem('keptyWelcomeSeen', '1');
+            window.location.href = `dashboard.html?id=${encodeURIComponent(userId)}`;
+        }, fadeDurationMs);
+    });
+}
+
+let wakeLockSentinel = null;
+async function requestWakeLock() {
+    try {
+        if (!('wakeLock' in navigator) || document.visibilityState !== 'visible') return;
+        wakeLockSentinel = await navigator.wakeLock.request('screen');
+        wakeLockSentinel.addEventListener('release', () => {
+            wakeLockSentinel = null;
+        });
+    } catch (err) {
+        console.warn('[WakeLock] unavailable:', err.message);
+    }
+}
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') requestWakeLock();
+});
+
+window.onload = () => { 
+    runWelcomeOverlay(); 
+    requestWakeLock();
+    lucide.createIcons();
+    const f = document.getElementById('main-footer'); 
+    f.addEventListener('scroll', () => { document.getElementById('footer-arrow').style.display = (f.scrollLeft + f.clientWidth >= f.scrollWidth - 10) ? 'none' : 'flex'; });
+    const gp = document.getElementById('global-player');
+    gp.onerror = () => console.error('[Audio] Audio element error. Code:', gp.error?.code, 'Src:', gp.src);
+    console.log('[Init] Script loaded. AUDIO_SOURCE:', AUDIO_SOURCE, 'LOCAL_AUDIO_MAP:', LOCAL_AUDIO_MAP);
+};
+</script>
+<script>
+function toggleSideMenu(isOpen){var m=document.getElementById('side-menu-content'),o=document.getElementById('side-menu-overlay'),t=document.querySelector('.menu-pill-trigger');if(isOpen){m.classList.add('open');o.classList.remove('hidden');if(t)t.classList.add('hidden');}else{m.classList.remove('open');o.classList.add('hidden');if(t)t.classList.remove('hidden');}}
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+

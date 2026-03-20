@@ -1,0 +1,357 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE DRESSING ROOM | KEPTY PREMIUM</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="study-tracker.js" defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --premium-orange: #FF8C00;
+            --bg-dark: #020617;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(255, 140, 0, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 100% 100%, rgba(30, 58, 138, 0.12) 0%, transparent 50%),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 600" preserveAspectRatio="none"><path d="M0,400 Q250,300 500,450 T1000,350" stroke="%234d8bff" stroke-width="2" fill="none" opacity="0.3"/><path d="M0,450 Q250,350 500,500 T1000,400" stroke="%237a4dff" stroke-width="2" fill="none" opacity="0.3"/></svg>');
+            background-size: 100% 100%, 100% 100%, 100% 100%;
+            color: #f8fafc;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        .glass-card {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .stat-card {
+            background: radial-gradient(circle at top left, rgba(255, 140, 0, 0.05), transparent), rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255, 140, 0, 0.3);
+            border-radius: 2.5rem;
+            position: relative;
+        }
+
+        .premium-number-subtle {
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: #ffffff;
+            line-height: 1;
+        }
+
+        .avatar-frame {
+            width: 110px; height: 110px;
+            padding: 4px;
+            background: linear-gradient(135deg, var(--premium-orange), #b45309);
+            border-radius: 50%;
+            box-shadow: 0 0 40px rgba(255, 140, 0, 0.4);
+        }
+
+        .avatar-img {
+            width: 100%; height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* アニメーション停止制御用クラス */
+        .wave-bar {
+            width: 5px; background: var(--premium-orange); border-radius: 10px; height: 12px;
+            animation: wave 1s ease-in-out infinite; animation-play-state: paused;
+        }
+        .playing .wave-bar { animation-play-state: running; }
+        @keyframes wave { 0%, 100% { height: 12px; } 50% { height: 32px; } }
+
+        .light-line-active {
+            position: absolute; left: 0; top: 0; height: 100%; background: var(--premium-orange);
+            box-shadow: 0 0 10px var(--premium-orange); width: 0%;
+            animation: light-move 30s linear infinite; animation-play-state: paused;
+        }
+        .playing .light-line-active { animation-play-state: running; }
+        @keyframes light-move { 0% { width: 0%; } 100% { width: 100%; } }
+
+        .circle-anim {
+            stroke-dasharray: 339.29; stroke-dashoffset: 339.29;
+            animation: circular-fill 30s linear infinite; animation-play-state: paused;
+        }
+        .playing .circle-anim { animation-play-state: running; }
+        @keyframes circular-fill { 0% { stroke-dashoffset: 339.29; } 100% { stroke-dashoffset: 0; } }
+
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        .floating { animation: floating 4s ease-in-out infinite; }
+        @keyframes floating { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+        .main-title {
+            color: var(--premium-orange); text-shadow: 0 0 20px rgba(255, 140, 0, 0.3); white-space: nowrap;
+        }
+    </style>
+<style>
+    .menu-pill-trigger { position:fixed;top:20px;right:20px;width:50px;height:27px;background-color:#CE4A22;border-radius:999px;display:flex;align-items:center;justify-content:center;z-index:5500;cursor:pointer;box-shadow:0 4px 12px rgba(15,23,42,.16);transition:transform .2s; }
+    .menu-pill-trigger:active { transform:scale(.9); }
+    .pill-icon { width:21px;display:flex;flex-direction:column;gap:3px; }
+    .pill-line { display:flex;align-items:center;gap:2px;height:2px; }
+    .pill-line .line { height:2px;background:white;border-radius:10px;flex-grow:1; }
+    .pill-line .dot { width:2px;height:2px;background:white;border-radius:50%; }
+    .pill-line.top .line { width:14px; }
+    .pill-line.bot .line { width:14px;order:-1; }
+    .side-menu-item-link { display:flex;align-items:center;gap:14px;padding:12px;border-radius:18px;transition:.2s;text-decoration:none; }
+    .side-menu-item-link:hover { background:#f8fafc; }
+    .side-menu-icon-box { width:40px;height:40px;border-radius:12px;background:#FFEDE8;display:flex;align-items:center;justify-content:center;color:#CE4A22; }
+    .side-menu-icon-box.active-bg { background:#CE4A22;color:white; }
+    #side-menu-content.open { right:0; }
+</style>
+</head>
+<div class="menu-pill-trigger" onclick="toggleSideMenu(true)"><div class="pill-icon"><div class="pill-line top"><span class="dot"></span><span class="line"></span></div><div class="pill-line mid"><span class="line"></span></div><div class="pill-line bot"><span class="line"></span><span class="dot"></span></div></div></div>
+<div id="side-menu-overlay" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[5000] hidden" onclick="toggleSideMenu(false)"></div>
+<nav id="side-menu-content" class="fixed top-0 right-[-280px] w-[280px] h-full bg-white z-[5001] transition-all duration-300 shadow-2xl p-6 flex flex-col"><div class="flex justify-between items-center mb-10"><div class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-l-2 border-slate-500 pl-3">Menu</div><button onclick="toggleSideMenu(false)" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-50 text-slate-400"><i data-lucide="x" class="w-5 h-5"></i></button></div><div class="space-y-3"><a href="main.html" class="side-menu-item-link"><div class="side-menu-icon-box"><i data-lucide="graduation-cap"></i></div><div class="flex flex-col"><span class="text-sm font-black text-slate-800">各種トレーニング</span></div></a><a href="dashboard.html" class="side-menu-item-link"><div class="side-menu-icon-box"><i data-lucide="bar-chart-3"></i></div><div class="flex flex-col"><span class="text-sm font-black text-slate-800">学習管理</span></div></a><a href="learning-direction.html" class="side-menu-item-link"><div class="side-menu-icon-box"><i data-lucide="compass"></i></div><div class="flex flex-col"><span class="text-sm font-black text-slate-800">学習方針</span></div></a><a href="dressing-room.html" class="side-menu-item-link"><div class="side-menu-icon-box"><i data-lucide="shirt"></i></div><div class="flex flex-col"><span class="text-sm font-black text-slate-800">ドレッシングルーム</span></div></a><a href="admin-audio.html" class="side-menu-item-link"><div class="side-menu-icon-box"><i data-lucide="settings"></i></div><div class="flex flex-col"><span class="text-sm font-black text-slate-800">音声管理</span></div></a></div></nav>
+
+    <div class="max-w-5xl pt-5 mx-auto z-10 relative">
+        
+        <header class="flex flex-col items-center text-center mb-10">
+            <div class="avatar-frame mb-8 floating">
+                <img src="./content/image/poodle.jpg" alt="CEO Avatar" class="avatar-img">
+            </div>
+            <h1 class="main-title text-3xl sm:text-5xl md:text-6xl font-black tracking-tighter mb-4 px-2">THE DRESSING ROOM</h1>
+            <p class="text-gray-400 text-sm sm:text-base font-medium mb-6">CEOのトレーニングを覗ける部屋です</p>
+            <div class="w-full max-w-md h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent mb-10"></div>
+            <div class="flex items-center space-x-3 bg-white/5 px-6 py-2 rounded-full border border-white/10">
+                <span class="w-2 h-2 rounded-full bg-[#FF8C00] animate-pulse"></span>
+                <span class="text-[11px] font-bold tracking-widest uppercase text-gray-400">CEO AVATAR IS ACTIVE: <span class="text-white">03H 45M TODAY</span></span>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-2 gap-4 sm:gap-6 mb-20 max-w-2xl mx-auto">
+            <div class="stat-card p-6 text-center glass-card">
+                <p class="text-[9px] text-orange-500/80 font-black uppercase tracking-[0.2em] mb-2">Total Output</p>
+                <div class="flex items-baseline justify-center">
+                    <span class="text-2xl sm:text-3xl premium-number-subtle">320</span>
+                    <span class="text-xs font-bold text-orange-500/60 ml-2 uppercase">Hrs</span>
+                </div>
+            </div>
+            <div class="stat-card p-6 text-center glass-card">
+                <p class="text-[9px] text-orange-500/80 font-black uppercase tracking-[0.2em] mb-2">Continuity</p>
+                <div class="flex items-baseline justify-center">
+                    <span class="text-2xl sm:text-3xl premium-number-subtle">445</span>
+                    <span class="text-xs font-bold text-orange-500/60 ml-2 uppercase">Days</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+            
+            <div id="card-shadowing" class="glass-card p-8 rounded-[2.5rem] flex flex-row justify-between items-center group min-h-[180px]">
+                <div class="flex-1">
+                    <div class="flex items-center space-x-2 mb-4">
+                        <span class="w-1.5 h-1.5 bg-[#FF8C00] rounded-full"></span>
+                        <span class="text-[10px] font-black uppercase tracking-widest text-orange-500">Shadowing</span>
+                    </div>
+                    <h3 class="text-xl sm:text-2xl font-bold tracking-tight mb-8">Advanced Logic Flow</h3>
+                    <div class="flex items-end space-x-1.5 h-10">
+                        <div class="wave-bar" style="animation-delay: 0.1s"></div>
+                        <div class="wave-bar" style="animation-delay: 0.3s"></div>
+                        <div class="wave-bar" style="animation-delay: 0.2s"></div>
+                        <div class="wave-bar" style="animation-delay: 0.5s"></div>
+                        <div class="wave-bar" style="animation-delay: 0.4s"></div>
+                    </div>
+                </div>
+                <div class="text-center flex flex-col items-center ml-4">
+                    <button id="shadowing-play" class="play-btn w-16 h-16 bg-white/5 border border-white/10 rounded-full flex items-center justify-center mb-3 transition-all">
+                        <svg class="icon-play w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        <svg class="icon-pause w-8 h-8 text-black hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                    </button>
+                    <div class="mono text-xs font-bold text-orange-500 tracking-tighter"><span class="countdown-seconds">30</span>S</div>
+                </div>
+            </div>
+
+            <div id="card-sentence" class="glass-card p-8 rounded-[2.5rem] flex flex-row justify-between items-center group min-h-[180px]">
+                <div class="flex-1">
+                    <div class="flex items-center space-x-2 mb-4">
+                        <span class="w-1.5 h-1.5 bg-[#FF8C00] rounded-full"></span>
+                        <span class="text-[10px] font-black uppercase tracking-widest text-orange-500">Sentence Building</span>
+                    </div>
+                    <h3 class="text-xl sm:text-2xl font-bold tracking-tight mb-8">Rapid Response Drill</h3>
+                    <div class="w-3/4 h-[2px] bg-white/5 relative overflow-hidden">
+                        <div class="light-line-active"></div>
+                    </div>
+                </div>
+                <div class="text-center flex flex-col items-center ml-4">
+                    <button id="sentence-play" class="play-btn w-16 h-16 bg-white/5 border border-white/10 rounded-full flex items-center justify-center mb-3 transition-all">
+                        <svg class="icon-play w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        <svg class="icon-pause w-8 h-8 text-black hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                    </button>
+                    <div class="mono text-xs font-bold text-orange-500 tracking-tighter"><span class="countdown-seconds">30</span>S</div>
+                </div>
+            </div>
+
+            <div id="card-topic" class="glass-card p-8 rounded-[2.5rem] flex flex-row justify-between items-center group min-h-[180px]">
+                <div class="flex-1">
+                    <div class="flex items-center space-x-2 mb-4">
+                        <span class="w-1.5 h-1.5 bg-[#FF8C00] rounded-full"></span>
+                        <span class="text-[10px] font-black uppercase tracking-widest text-orange-500">Topic Talk</span>
+                    </div>
+                    <h3 class="text-xl sm:text-2xl font-bold tracking-tight mb-8">Investment Dialogue</h3>
+                    <div id="dot-container" class="flex space-x-1 relative h-2">
+                        <div class="topic-dot w-2 h-2 rounded-full bg-white/10 transition-colors duration-300"></div>
+                        <div class="topic-dot w-2 h-2 rounded-full bg-white/10 transition-colors duration-300"></div>
+                        <div class="topic-dot w-2 h-2 rounded-full bg-white/10 transition-colors duration-300"></div>
+                        <div class="topic-dot w-2 h-2 rounded-full bg-white/10 transition-colors duration-300"></div>
+                        <div class="topic-dot w-2 h-2 rounded-full bg-white/10 transition-colors duration-300"></div>
+                        <div class="topic-dot w-2 h-2 rounded-full bg-white/10 transition-colors duration-300"></div>
+                        <div class="topic-dot w-2 h-2 rounded-full bg-white/10 transition-colors duration-300"></div>
+                        <div class="topic-dot w-2 h-2 rounded-full bg-white/10 transition-colors duration-300"></div>
+                        <div class="topic-dot w-2 h-2 rounded-full bg-white/10 transition-colors duration-300"></div>
+                        <div class="topic-dot w-2 h-2 rounded-full bg-white/10 transition-colors duration-300"></div>
+                    </div>
+                </div>
+                <div class="text-center flex flex-col items-center ml-4">
+                    <button id="topic-play" class="play-btn w-16 h-16 bg-white/5 border border-white/10 rounded-full flex items-center justify-center mb-3 transition-all">
+                        <svg class="icon-play w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        <svg class="icon-pause w-8 h-8 text-black hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                    </button>
+                    <div class="mono text-xs font-bold text-orange-500 tracking-tighter"><span class="countdown-seconds">30</span>S</div>
+                </div>
+            </div>
+
+            <div id="card-pronunciation" class="glass-card p-8 rounded-[2.5rem] flex flex-row justify-between items-center group min-h-[180px]">
+                <div class="flex-1">
+                    <div class="flex items-center space-x-2 mb-4">
+                        <span class="w-1.5 h-1.5 bg-[#FF8C00] rounded-full"></span>
+                        <span class="text-[10px] font-black uppercase tracking-widest text-orange-500">Pronunciation</span>
+                    </div>
+                    <h3 class="text-xl sm:text-2xl font-bold tracking-tight mb-8">Phonetic Precision</h3>
+                    <div class="relative w-12 h-12">
+                        <svg class="w-full h-full transform -rotate-90" viewBox="0 0 120 120">
+                            <circle cx="60" cy="60" r="54" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="12"/>
+                            <circle cx="60" cy="60" r="54" fill="none" stroke="#FF8C00" stroke-width="12" stroke-linecap="round" class="circle-anim"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="text-center flex flex-col items-center ml-4">
+                    <button id="pronunciation-play" class="play-btn w-16 h-16 bg-white/5 border border-white/10 rounded-full flex items-center justify-center mb-3 transition-all">
+                        <svg class="icon-play w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        <svg class="icon-pause w-8 h-8 text-black hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                    </button>
+                    <div class="mono text-xs font-bold text-orange-500 tracking-tighter"><span class="countdown-seconds">30</span>S</div>
+                </div>
+            </div>
+
+        </div>
+
+        <footer class="text-center py-20 opacity-30">
+            <p class="text-[10px] font-bold tracking-[0.5em] uppercase">Kepty English Premium | 2026</p>
+        </footer>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            let currentPlayingId = null;
+            let countdownInterval = null;
+            let timeLeftGlobal = 30;
+
+            function resetAll() {
+                // ボタンUIリセット
+                document.querySelectorAll('.play-btn').forEach(btn => {
+                    const iconPlay = btn.querySelector('.icon-play');
+                    const iconPause = btn.querySelector('.icon-pause');
+                    btn.classList.remove('bg-[#FF8C00]', 'shadow-lg', 'shadow-orange-500/20');
+                    btn.classList.add('bg-white/5', 'border', 'border-white/10');
+                    iconPlay.classList.remove('hidden');
+                    iconPlay.classList.add('text-white');
+                    iconPause.classList.add('hidden');
+                });
+
+                // アニメーション停止
+                document.querySelectorAll('.glass-card').forEach(card => card.classList.remove('playing'));
+
+                // ドットリセット
+                document.querySelectorAll('.topic-dot').forEach(dot => dot.classList.remove('bg-[#FF8C00]'));
+
+                // タイマー停止
+                clearInterval(countdownInterval);
+                timeLeftGlobal = 30;
+                document.querySelectorAll('.countdown-seconds').forEach(el => el.textContent = '30');
+                
+                currentPlayingId = null;
+            }
+
+            function startPlaying(cardId) {
+                const btn = document.querySelector(`#${cardId}-play`);
+                const card = document.querySelector(`#card-${cardId}`);
+                const iconPlay = btn.querySelector('.icon-play');
+                const iconPause = btn.querySelector('.icon-pause');
+
+                // 再生中UI
+                btn.classList.remove('bg-white/5', 'border', 'border-white/10');
+                btn.classList.add('bg-[#FF8C00]', 'shadow-lg', 'shadow-orange-500/20');
+                iconPlay.classList.add('hidden');
+                iconPause.classList.remove('hidden');
+                card.classList.add('playing');
+
+                currentPlayingId = cardId;
+
+                // カウントダウン開始
+                countdownInterval = setInterval(() => {
+                    timeLeftGlobal--;
+                    
+                    if (timeLeftGlobal < 0) {
+                        resetAll();
+                        return;
+                    }
+
+                    // 数字の更新
+                    document.querySelectorAll('.countdown-seconds').forEach(el => el.textContent = timeLeftGlobal);
+
+                    // ドット進行ロジック (30秒で10個 = 3秒ごとに1点灯)
+                    if (currentPlayingId === 'topic') {
+                        const elapsed = 30 - timeLeftGlobal;
+                        const dotsToLight = Math.floor(elapsed / 3);
+                        const dots = document.querySelectorAll('.topic-dot');
+                        dots.forEach((dot, index) => {
+                            if (index < dotsToLight) {
+                                dot.classList.add('bg-[#FF8C00]');
+                            } else {
+                                dot.classList.remove('bg-[#FF8C00]');
+                            }
+                        });
+                    }
+                }, 1000);
+            }
+
+            document.querySelectorAll('.play-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = btn.id.replace('-play', '');
+                    if (currentPlayingId === id) {
+                        resetAll();
+                    } else {
+                        resetAll();
+                        startPlaying(id);
+                    }
+                });
+            });
+        });
+    </script>
+<script>
+function toggleSideMenu(isOpen){var m=document.getElementById('side-menu-content'),o=document.getElementById('side-menu-overlay'),t=document.querySelector('.menu-pill-trigger');if(isOpen){m.classList.add('open');o.classList.remove('hidden');if(t)t.classList.add('hidden');}else{m.classList.remove('open');o.classList.add('hidden');if(t)t.classList.remove('hidden');}}
+document.addEventListener('DOMContentLoaded',function(){lucide.createIcons();});
+</script>
+</body>
+</html>
+
+
+
+
+
+

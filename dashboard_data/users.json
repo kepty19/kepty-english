@@ -1,0 +1,14 @@
+{
+  "defaultUserId": "tomohiro.19",
+  "users": {
+    "tomohiro.19": {
+      "configFile": "tomohiro.19.json"
+    },
+    "sample.user": {
+      "configFile": "sample.user.json"
+    },
+    "jay": {
+        "configFile": "jay.json"
+    }
+  }
+}

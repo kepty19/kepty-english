@@ -1,0 +1,357 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kepty Audio Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="study-tracker.js" defer></script>
+    <style>
+        body { font-family: 'Inter', system-ui, sans-serif; background: #f8fafc; }
+        .card { background: white; border-radius: 16px; border: 1px solid #e2e8f0; padding: 24px; }
+        audio { height: 36px; }
+        .lesson-row { transition: background 0.15s; }
+        .lesson-row:hover { background: #f8fafc; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+        .dot-ok { background: #10b981; }
+        .dot-missing { background: #ef4444; }
+        .dot-local { background: #f59e0b; }
+    </style>
+<style>
+    .menu-pill-trigger { position:fixed;top:20px;right:20px;width:50px;height:27px;background-color:#CE4A22;border-radius:999px;display:flex;align-items:center;justify-content:center;z-index:5500;cursor:pointer;box-shadow:0 4px 12px rgba(15,23,42,.16);transition:transform .2s; }
+    .menu-pill-trigger:active { transform:scale(.9); }
+    .pill-icon { width:21px;display:flex;flex-direction:column;gap:3px; }
+    .pill-line { display:flex;align-items:center;gap:2px;height:2px; }
+    .pill-line .line { height:2px;background:white;border-radius:10px;flex-grow:1; }
+    .pill-line .dot { width:2px;height:2px;background:white;border-radius:50%; }
+    .pill-line.top .line { width:14px; }
+    .pill-line.bot .line { width:14px;order:-1; }
+    .side-menu-item-link { display:flex;align-items:center;gap:14px;padding:12px;border-radius:18px;transition:.2s;text-decoration:none; }
+    .side-menu-item-link:hover { background:#f8fafc; }
+    .side-menu-icon-box { width:40px;height:40px;border-radius:12px;background:#FFEDE8;display:flex;align-items:center;justify-content:center;color:#CE4A22; }
+    .side-menu-icon-box.active-bg { background:#CE4A22;color:white; }
+    #side-menu-content.open { right:0; }
+</style>
+</head>
+<body class="min-h-screen p-6 md:p-10">
+<div class="menu-pill-trigger" onclick="toggleSideMenu(true)"><div class="pill-icon"><div class="pill-line top"><span class="dot"></span><span class="line"></span></div><div class="pill-line mid"><span class="line"></span></div><div class="pill-line bot"><span class="line"></span><span class="dot"></span></div></div></div>
+<div id="side-menu-overlay" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[5000] hidden" onclick="toggleSideMenu(false)"></div>
+<nav id="side-menu-content" class="fixed top-0 right-[-280px] w-[280px] h-full bg-white z-[5001] transition-all duration-300 shadow-2xl p-6 flex flex-col"><div class="flex justify-between items-center mb-10"><div class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-l-2 border-slate-500 pl-3">Menu</div><button onclick="toggleSideMenu(false)" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-50 text-slate-400"><i data-lucide="x" class="w-5 h-5"></i></button></div><div class="space-y-3"><a href="main.html" class="side-menu-item-link"><div class="side-menu-icon-box"><i data-lucide="graduation-cap"></i></div><div class="flex flex-col"><span class="text-sm font-black text-slate-800">各種トレーニング</span></div></a><a href="dashboard.html" class="side-menu-item-link"><div class="side-menu-icon-box"><i data-lucide="bar-chart-3"></i></div><div class="flex flex-col"><span class="text-sm font-black text-slate-800">学習管理</span></div></a><a href="learning-direction.html" class="side-menu-item-link"><div class="side-menu-icon-box"><i data-lucide="compass"></i></div><div class="flex flex-col"><span class="text-sm font-black text-slate-800">学習方針</span></div></a><a href="dressing-room.html" class="side-menu-item-link"><div class="side-menu-icon-box"><i data-lucide="shirt"></i></div><div class="flex flex-col"><span class="text-sm font-black text-slate-800">ドレッシングルーム</span></div></a><a href="admin-audio.html" class="side-menu-item-link"><div class="side-menu-icon-box"><i data-lucide="settings"></i></div><div class="flex flex-col"><span class="text-sm font-black text-slate-800">音声管理</span></div></a></div></nav>
+    <div class="max-w-4xl mx-auto">
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h1 class="text-2xl font-black text-slate-900 tracking-tight">Kepty Audio Admin</h1>
+                <p class="text-sm text-slate-400 mt-1">Manage audio source and local file mappings for Shadowing</p>
+            </div>
+            <a href="main.html" class="text-sm font-bold text-orange-500 hover:underline">&larr; Back to App</a>
+        </div>
+
+        <!-- Audio Source Setting -->
+        <div class="card mb-6">
+            <h2 class="text-sm font-black text-slate-700 uppercase tracking-wider mb-4">Audio Source</h2>
+            <p class="text-xs text-slate-400 mb-4">Choose where the Shadowing tab loads audio from. This applies to the main app immediately on next page load.</p>
+            <div class="flex gap-3" id="source-toggle">
+                <button onclick="setSource('local')" id="src-local" class="flex-1 px-5 py-4 rounded-xl border-2 text-left transition-all">
+                    <span class="text-sm font-black block mb-1">Local Files</span>
+                    <span class="text-[11px] text-slate-400">Uses audio from content/audios/ folder</span>
+                </button>
+                <button onclick="setSource('drive')" id="src-drive" class="flex-1 px-5 py-4 rounded-xl border-2 text-left transition-all">
+                    <span class="text-sm font-black block mb-1">Google Drive</span>
+                    <span class="text-[11px] text-slate-400">Uses audio URLs from Google Sheets</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Local Audio Folders -->
+        <div class="card mb-6">
+            <h2 class="text-sm font-black text-slate-700 uppercase tracking-wider mb-4">Local Audio Folders</h2>
+            <p class="text-xs text-slate-400 mb-4">Add audio folders below. Each folder should contain files named like <code class="bg-slate-100 px-1 rounded">Prefix_no.1.mp3</code></p>
+            <div id="folder-list" class="space-y-3"></div>
+            <button onclick="addFolder()" class="mt-4 px-4 py-2 bg-slate-100 text-slate-700 text-sm font-bold rounded-xl hover:bg-slate-200 transition-colors">+ Add Lesson Mapping</button>
+        </div>
+
+        <!-- Preview / Test -->
+        <!-- Theme to File Mapping -->
+        <div class="card mb-6">
+            <h2 class="text-sm font-black text-slate-700 uppercase tracking-wider mb-4">Theme → File Mapping (Optional)</h2>
+            <p class="text-xs text-slate-400 mb-4">Override the default file numbering. If left empty, file numbers are derived from theme order in the spreadsheet data (1st theme → 1.mp3, 2nd → 2.mp3, etc).</p>
+            <div id="theme-map-area" class="space-y-4"></div>
+        </div>
+
+        <!-- Audio Preview -->
+        <div class="card mb-6">
+            <h2 class="text-sm font-black text-slate-700 uppercase tracking-wider mb-4">Audio Preview</h2>
+            <div class="grid grid-cols-1 gap-2" id="preview-area">
+                <p class="text-sm text-slate-400">Save mappings first, then preview will appear here.</p>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex gap-3">
+            <button onclick="saveMappings()" class="px-6 py-3 bg-orange-500 text-white text-sm font-bold rounded-xl hover:bg-orange-600 transition-colors shadow-sm">Save Mappings</button>
+            <button onclick="resetMappings()" class="px-6 py-3 bg-slate-100 text-slate-600 text-sm font-bold rounded-xl hover:bg-slate-200 transition-colors">Reset to Defaults</button>
+            <button onclick="exportMappings()" class="px-6 py-3 bg-slate-100 text-slate-600 text-sm font-bold rounded-xl hover:bg-slate-200 transition-colors">Export JSON</button>
+        </div>
+
+        <p id="status-msg" class="text-sm font-bold mt-4 text-emerald-600 opacity-0 transition-opacity"></p>
+    </div>
+
+<script>
+const DEFAULT_MAP = {
+    "TOEIC #Part3": "part3.01",
+    "TED #Grit": "GRIT.02",
+    "TED #30 days": "try.03",
+    "TED #original thinkers": "ogthinkers.04",
+    "First Step": "firststep.05"
+};
+const LEGACY_KEY_MAP = {
+    "part3": "TOEIC #Part3",
+    "GRIT": "TED #Grit",
+    "30 days": "TED #30 days",
+    "Original thinkers": "TED #original thinkers"
+};
+function normalizeMappings(rawMap) {
+    const src = rawMap && typeof rawMap === 'object' ? rawMap : {};
+    const next = { ...DEFAULT_MAP, ...src };
+    Object.entries(LEGACY_KEY_MAP).forEach(([legacyKey, newKey]) => {
+        if (!next[newKey] && src[legacyKey]) next[newKey] = src[legacyKey];
+        delete next[legacyKey];
+    });
+    return next;
+}
+
+let mappings = normalizeMappings(JSON.parse(localStorage.getItem('keptyLocalAudioMap') || 'null'));
+localStorage.setItem('keptyLocalAudioMap', JSON.stringify(mappings));
+
+let themeToFileMap = JSON.parse(localStorage.getItem('keptyThemeToFileMap') || 'null') || {};
+
+function renderFolders() {
+    const container = document.getElementById('folder-list');
+    const entries = Object.entries(mappings);
+    container.innerHTML = entries.map(([lesson, folder], i) => `
+        <div class="lesson-row flex flex-wrap items-center gap-3 p-3 rounded-xl border border-slate-100">
+            <div class="flex-1 min-w-[140px]">
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Lesson Name</label>
+                <input type="text" value="${escHtml(lesson)}" data-idx="${i}" data-field="lesson"
+                    class="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-orange-200">
+            </div>
+            <div class="flex-1 min-w-[180px]">
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Folder Name</label>
+                <input type="text" value="${escHtml(folder)}" data-idx="${i}" data-field="folder"
+                    class="w-full mt-1 px-3 py-2 border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-orange-200">
+            </div>
+            <div class="flex-1 min-w-[180px]">
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Pattern</label>
+                <p class="mt-1 px-3 py-2 text-xs text-slate-400 font-mono">content/audios/${escHtml(folder)}/{n}.mp3</p>
+            </div>
+            <button onclick="removeFolder(${i})" class="mt-5 p-2 text-slate-300 hover:text-rose-500 transition-colors" title="Remove">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </button>
+        </div>
+    `).join('');
+}
+
+function readFormMappings() {
+    const inputs = document.querySelectorAll('#folder-list input');
+    const newMap = {};
+    const lessons = [];
+    inputs.forEach(inp => {
+        const idx = parseInt(inp.dataset.idx);
+        if (!lessons[idx]) lessons[idx] = { lesson: '', folder: '' };
+        lessons[idx][inp.dataset.field] = inp.value.trim();
+    });
+    lessons.forEach(l => {
+        if (l.lesson) newMap[l.lesson] = l.folder;
+    });
+    return newMap;
+}
+
+function addFolder() {
+    mappings = readFormMappings();
+    mappings["New Lesson"] = "";
+    renderFolders();
+}
+
+function removeFolder(idx) {
+    mappings = readFormMappings();
+    const keys = Object.keys(mappings);
+    delete mappings[keys[idx]];
+    renderFolders();
+}
+
+function saveMappings() {
+    mappings = readFormMappings();
+    localStorage.setItem('keptyLocalAudioMap', JSON.stringify(mappings));
+    saveThemeMappings();
+    showStatus('Saved to localStorage!');
+    renderPreview();
+}
+
+function resetMappings() {
+    mappings = structuredClone(DEFAULT_MAP);
+    localStorage.setItem('keptyLocalAudioMap', JSON.stringify(mappings));
+    themeToFileMap = {};
+    localStorage.setItem('keptyThemeToFileMap', JSON.stringify(themeToFileMap));
+    renderFolders();
+    renderThemeMapUI();
+    renderPreview();
+    showStatus('Reset to defaults.');
+}
+
+function exportMappings() {
+    mappings = readFormMappings();
+    const blob = new Blob([JSON.stringify(mappings, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'kepty-audio-map.json'; a.click();
+    URL.revokeObjectURL(url);
+    showStatus('Exported JSON file.');
+}
+
+function renderPreview() {
+    const area = document.getElementById('preview-area');
+    const entries = Object.entries(mappings);
+    if (entries.length === 0) { area.innerHTML = '<p class="text-sm text-slate-400">No mappings configured.</p>'; return; }
+    area.innerHTML = entries.map(([lesson, folder]) => {
+        return `
+        <details class="border border-slate-100 rounded-xl overflow-hidden">
+            <summary class="px-4 py-3 cursor-pointer hover:bg-slate-50 flex items-center gap-3">
+                <span class="text-sm font-bold text-slate-800">${escHtml(lesson)}</span>
+                <span class="text-[10px] text-slate-400 font-mono">content/audios/${escHtml(folder)}/{n}.mp3</span>
+            </summary>
+            <div class="px-4 pb-4 space-y-2">
+                ${[1,2,3,4,5].map(n => {
+                    const url = folder ? `content/audios/${folder}/${n}.mp3` : '';
+                    return `<div class="flex items-center gap-3">
+                        <span class="text-xs font-mono text-slate-500 w-6">#${n}</span>
+                        <audio controls preload="none" src="${url}" class="flex-1"></audio>
+                    </div>`;
+                }).join('')}
+            </div>
+        </details>`;
+    }).join('');
+}
+
+function showStatus(msg) {
+    const el = document.getElementById('status-msg');
+    el.textContent = msg;
+    el.style.opacity = '1';
+    setTimeout(() => { el.style.opacity = '0'; }, 2500);
+}
+
+function escHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+let audioSource = localStorage.getItem('keptyAudioSource') || 'local';
+
+function setSource(src) {
+    audioSource = src;
+    localStorage.setItem('keptyAudioSource', src);
+    renderSourceToggle();
+    showStatus(src === 'local' ? 'Audio source set to Local Files.' : 'Audio source set to Google Drive.');
+}
+
+function renderSourceToggle() {
+    const localBtn = document.getElementById('src-local');
+    const driveBtn = document.getElementById('src-drive');
+    localBtn.className = `flex-1 px-5 py-4 rounded-xl border-2 text-left transition-all ${audioSource === 'local' ? 'border-orange-400 bg-orange-50' : 'border-slate-200 bg-white hover:border-slate-300'}`;
+    driveBtn.className = `flex-1 px-5 py-4 rounded-xl border-2 text-left transition-all ${audioSource === 'drive' ? 'border-orange-400 bg-orange-50' : 'border-slate-200 bg-white hover:border-slate-300'}`;
+}
+
+function renderThemeMapUI() {
+    const area = document.getElementById('theme-map-area');
+    const lessons = Object.keys(mappings);
+    if (lessons.length === 0) { area.innerHTML = '<p class="text-sm text-slate-400">Add lesson mappings above first.</p>'; return; }
+    area.innerHTML = lessons.map(lesson => {
+        const folder = mappings[lesson];
+        const themesForLesson = themeToFileMap[lesson] || {};
+        const entries = Object.entries(themesForLesson);
+        return `
+        <details class="border border-slate-100 rounded-xl overflow-hidden">
+            <summary class="px-4 py-3 cursor-pointer hover:bg-slate-50 flex items-center gap-3">
+                <span class="text-sm font-bold text-slate-800">${escHtml(lesson)}</span>
+                <span class="text-[10px] text-slate-400">${entries.length} theme(s) mapped</span>
+            </summary>
+            <div class="px-4 pb-4 space-y-2" id="theme-entries-${escAttr(lesson)}">
+                ${entries.map(([ theme, fileNum], i) => themeRowHtml(lesson, theme, fileNum, i)).join('')}
+                <button onclick="addThemeEntry('${escAttr(lesson)}')" class="mt-2 px-3 py-1.5 bg-slate-100 text-slate-600 text-xs font-bold rounded-lg hover:bg-slate-200">+ Add Theme</button>
+            </div>
+        </details>`;
+    }).join('');
+}
+
+function themeRowHtml(lesson, theme, fileNum, idx) {
+    return `<div class="flex items-center gap-2">
+        <input type="text" value="${escHtml(theme)}" placeholder="Theme name" data-lesson="${escAttr(lesson)}" data-tidx="${idx}" data-tfield="theme"
+            class="flex-1 px-2 py-1.5 border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-orange-200">
+        <span class="text-slate-400">→</span>
+        <input type="text" value="${escHtml(String(fileNum))}" placeholder="File #" data-lesson="${escAttr(lesson)}" data-tidx="${idx}" data-tfield="fileNum"
+            class="w-20 px-2 py-1.5 border border-slate-200 rounded-lg text-sm text-slate-700 text-center focus:outline-none focus:ring-2 focus:ring-orange-200">
+        <span class="text-xs text-slate-400 font-mono">.mp3</span>
+        <button onclick="removeThemeEntry('${escAttr(lesson)}', ${idx})" class="p-1 text-slate-300 hover:text-rose-500">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+    </div>`;
+}
+
+function escAttr(str) { return str.replace(/'/g, "\\'").replace(/"/g, '&quot;'); }
+
+function addThemeEntry(lesson) {
+    readThemeMappingsFromForm();
+    if (!themeToFileMap[lesson]) themeToFileMap[lesson] = {};
+    themeToFileMap[lesson][''] = '';
+    renderThemeMapUI();
+}
+
+function removeThemeEntry(lesson, idx) {
+    readThemeMappingsFromForm();
+    const keys = Object.keys(themeToFileMap[lesson] || {});
+    if (keys[idx] !== undefined) delete themeToFileMap[lesson][keys[idx]];
+    renderThemeMapUI();
+}
+
+function readThemeMappingsFromForm() {
+    const inputs = document.querySelectorAll('[data-tfield]');
+    const temp = {};
+    inputs.forEach(inp => {
+        const lesson = inp.dataset.lesson;
+        const idx = parseInt(inp.dataset.tidx);
+        if (!temp[lesson]) temp[lesson] = [];
+        if (!temp[lesson][idx]) temp[lesson][idx] = { theme: '', fileNum: '' };
+        temp[lesson][idx][inp.dataset.tfield] = inp.value.trim();
+    });
+    themeToFileMap = {};
+    for (const [lesson, entries] of Object.entries(temp)) {
+        themeToFileMap[lesson] = {};
+        entries.forEach(e => { if (e && e.theme) themeToFileMap[lesson][e.theme] = e.fileNum; });
+    }
+}
+
+function saveThemeMappings() {
+    readThemeMappingsFromForm();
+    localStorage.setItem('keptyThemeToFileMap', JSON.stringify(themeToFileMap));
+}
+
+// Init
+renderSourceToggle();
+renderFolders();
+renderThemeMapUI();
+renderPreview();
+</script>
+<script>
+function toggleSideMenu(isOpen){var m=document.getElementById('side-menu-content'),o=document.getElementById('side-menu-overlay'),t=document.querySelector('.menu-pill-trigger');if(isOpen){m.classList.add('open');o.classList.remove('hidden');if(t)t.classList.add('hidden');}else{m.classList.remove('open');o.classList.add('hidden');if(t)t.classList.remove('hidden');}}
+document.addEventListener('DOMContentLoaded',function(){lucide.createIcons();});
+</script>
+</body>
+</html>
+
+
+
+
+
+
+

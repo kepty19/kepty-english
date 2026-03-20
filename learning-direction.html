@@ -1,0 +1,406 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kepty English | 学習方針</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="study-tracker.js" defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --kepty-orange: #CE4A22; 
+            --kepty-light-orange: #FFEDE8; 
+            --kepty-mid-orange: #FAC3B1;
+            --kepty-dark: #1e293b;
+        }
+        body { font-family: 'Inter', -apple-system, sans-serif; background-color: #f8fafc; color: var(--kepty-dark); overflow-x: hidden; }
+        
+        /* タイトル：オレンジのプレミアムアンダーライン */
+        .app-title-container { display: inline-block; position: relative; margin-bottom: 2rem; }
+        .app-title { font-size: 1.65rem; font-weight: 900; letter-spacing: -0.05em; white-space: nowrap; }
+        .app-title-underline { position: absolute; bottom: -8px; left: 0; width: 100%; height: 4px; background-color:#CE4A22; border-radius: 2px; }
+        @media (min-width: 768px) { .app-title { font-size: 2.5rem; } }
+
+        .section-no { font-size: 0.75rem; font-weight: 900; color: #CE4A22; letter-spacing: 0.1em; display: block; margin-bottom: 0.5rem; }
+
+        /* Section 1 */
+        .formula-circle {
+            width: 76px; height: 76px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            border-radius: 50%; background: #2d2d2d; color: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+        @media (min-width: 768px) { .formula-circle { width: 110px; height: 110px; } }
+
+        /* Section 2: 5ステップ図解 */
+        .step-icon-box {
+            width: 40px; height: 40px;
+            display: flex; align-items: center; justify-content: center;
+            background: white; border: 1.5px solid #f1f5f9; border-radius: 12px;
+            margin-bottom: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            color: #94a3b8;
+        }
+        .step-node-line {
+            height: 3px; background: #e2e8f0; flex-grow: 1; margin-top: 20px;
+            position: relative; overflow: hidden;
+        }
+        .step-node-line.active { background: #CE4A22; }
+        
+        /* 矢印化したインジケーター */
+        .indicator-arrow { height: 2px; position: relative; display: flex; align-items: center; background-color: rgba(206, 74, 34, 0.2); }
+        .indicator-arrow::after { content: ''; position: absolute; right: 0; width: 6px; height: 6px; border-top: 2px solid #CE4A22; border-right: 2px solid #CE4A22; transform: rotate(45deg); }
+
+        /* Section 3: モダンな曲線エッジのオレンジ枠 */
+        .detail-card {
+            background: white;
+            position: relative;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+            transition: transform 0.2s;
+            overflow: hidden;
+            border-left: 6px solid #CE4A22;
+        }
+        .detail-card:hover { transform: translateX(4px); }
+        .label-gray { background: #f1f5f9; color: #64748b; font-size: 9px; font-weight: 900; padding: 2px 8px; border-radius: 4px; display: inline-block; }
+        
+        .skill-badge {
+            background: white; border: 1px solid #f1f5f9; border-radius: 9999px;
+            padding: 2px 8px; font-size: 8px; font-weight: 900; letter-spacing: 0.1em;
+            text-transform: uppercase; color: #94a3b8;
+        }
+
+        /* Section 4 */
+        .intensity-bar { height: 34px; border-radius: 10px; display: flex; align-items: center; padding: 0 14px; font-size: 11px; font-weight: 800; margin-bottom: 6px; }
+        .intensity-high { background-color:#CE4A22; color: white; width: 100%; }
+        .intensity-mid { background-color: #FAC3B1; color: #CE4A22; width: 85%; }
+        .intensity-low { background-color: #FFEDE8; color: #94a3b8; width: 65%; }
+        .big-arrow { color: #e2e8f0; }
+
+        .intensity-legend { display: flex; justify-content: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+        .legend-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border-radius: 999px;
+            padding: 4px 10px;
+            font-size: 10px;
+            font-weight: 900;
+            letter-spacing: 0.02em;
+            border: 1px solid #e2e8f0;
+            background: #fff;
+            color: #64748b;
+        }
+        .legend-dot { width: 8px; height: 8px; border-radius: 999px; }
+        .legend-dot.high { background: #CE4A22; }
+        .legend-dot.mid { background: #FAC3B1; }
+        .legend-dot.low { background: #FFEDE8; border: 1px solid #e2e8f0; }
+    </style>
+<style>
+    .menu-pill-trigger { position:fixed;top:20px;right:20px;width:50px;height:27px;background-color:#CE4A22;border-radius:999px;display:flex;align-items:center;justify-content:center;z-index:5500;cursor:pointer;box-shadow:0 4px 12px rgba(15,23,42,.16);transition:transform .2s; }
+    .menu-pill-trigger:active { transform:scale(.9); }
+    .pill-icon { width:21px;display:flex;flex-direction:column;gap:3px; }
+    .pill-line { display:flex;align-items:center;gap:2px;height:2px; }
+    .pill-line .line { height:2px;background:white;border-radius:10px;flex-grow:1; }
+    .pill-line .dot { width:2px;height:2px;background:white;border-radius:50%; }
+    .pill-line.top .line { width:14px; }
+    .pill-line.bot .line { width:14px;order:-1; }
+    .side-menu-item-link { display:flex;align-items:center;gap:14px;padding:12px;border-radius:18px;transition:.2s;text-decoration:none; }
+    .side-menu-item-link:hover { background:#f8fafc; }
+    .side-menu-icon-box { width:40px;height:40px;border-radius:12px;background:#FFEDE8;display:flex;align-items:center;justify-content:center;color:#CE4A22; }
+    .side-menu-icon-box.active-bg { background:#CE4A22;color:white; }
+    #side-menu-content.open { right:0; }
+</style>
+</head>
+<body class="pb-20">
+<div class="menu-pill-trigger" onclick="toggleSideMenu(true)"><div class="pill-icon"><div class="pill-line top"><span class="dot"></span><span class="line"></span></div><div class="pill-line mid"><span class="line"></span></div><div class="pill-line bot"><span class="line"></span><span class="dot"></span></div></div></div>
+<div id="side-menu-overlay" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[5000] hidden" onclick="toggleSideMenu(false)"></div>
+<nav id="side-menu-content" class="fixed top-0 right-[-280px] w-[280px] h-full bg-white z-[5001] transition-all duration-300 shadow-2xl p-6 flex flex-col"><div class="flex justify-between items-center mb-10"><div class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-l-2 border-slate-500 pl-3">Menu</div><button onclick="toggleSideMenu(false)" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-50 text-slate-400"><i data-lucide="x" class="w-5 h-5"></i></button></div><div class="space-y-3"><a href="main.html" class="side-menu-item-link"><div class="side-menu-icon-box"><i data-lucide="graduation-cap"></i></div><div class="flex flex-col"><span class="text-sm font-black text-slate-800">各種トレーニング</span></div></a><a href="dashboard.html" class="side-menu-item-link"><div class="side-menu-icon-box"><i data-lucide="bar-chart-3"></i></div><div class="flex flex-col"><span class="text-sm font-black text-slate-800">学習管理</span></div></a><a href="learning-direction.html" class="side-menu-item-link"><div class="side-menu-icon-box"><i data-lucide="compass"></i></div><div class="flex flex-col"><span class="text-sm font-black text-slate-800">学習方針</span></div></a><a href="dressing-room.html" class="side-menu-item-link"><div class="side-menu-icon-box"><i data-lucide="shirt"></i></div><div class="flex flex-col"><span class="text-sm font-black text-slate-800">ドレッシングルーム</span></div></a><a href="admin-audio.html" class="side-menu-item-link"><div class="side-menu-icon-box"><i data-lucide="settings"></i></div><div class="flex flex-col"><span class="text-sm font-black text-slate-800">音声管理</span></div></a></div></nav>
+
+    <div class="max-w-4xl mx-auto px-4 pt-12">
+        <header class="text-center mb-16">
+            <div class="app-title-container">
+                <h1 class="app-title tracking-tighter">Kepty English 学習方針</h1>
+                <div class="app-title-underline"></div>
+            </div>
+        </header>
+
+        <section class="mb-24">
+            <div class="text-center">
+                <span class="section-no">No.1</span>
+                <h2 class="text-2xl font-black mb-10 text-center">英語力向上における重要指標</h2>
+                <p class="text-xs text-slate-400 font-bold leading-relaxed mb-8">aaa<br>aaa</p>
+            </div>
+            
+            <div class="flex items-start justify-center gap-2 md:gap-6">
+                <div class="flex flex-col items-center flex-1">
+                    <div class="formula-circle mb-4"><span class="text-xl md:text-2xl font-black">質</span></div>
+                    <ul class="text-[9px] md:text-[10px] font-bold text-slate-500 text-left space-y-1">
+                        <li class="flex items-start gap-1 whitespace-nowrap"><span>•</span>個別最適化された学習設計</li>
+                        <li class="flex items-start gap-1 whitespace-nowrap"><span>•</span>正しい理論に立脚した学習</li>
+                    </ul>
+                </div>
+                <div class="text-xl font-black text-slate-300 mt-6 md:mt-10">×</div>
+                <div class="flex flex-col items-center flex-1">
+                    <div class="formula-circle mb-4"><span class="text-xl md:text-2xl font-black">量</span></div>
+                    <ul class="text-[9px] md:text-[10px] font-bold text-slate-500 text-left space-y-1">
+                        <li class="flex items-start gap-1"><span>•</span>膨大な量のインプット</li>
+                        <li class="flex items-start gap-1"><span>•</span>数多くのアウトプット</li>
+                    </ul>
+                </div>
+                <div class="text-xl font-black text-slate-300 mt-6 md:mt-10">×</div>
+                <div class="flex flex-col items-center flex-1">
+                    <div class="formula-circle mb-4"><span class="text-xl md:text-2xl font-black">継続</span></div>
+                    <ul class="text-[9px] md:text-[10px] font-bold text-slate-500 text-left space-y-1">
+                        <li class="flex items-start gap-1"><span>•</span>長期間の学習</li>
+                        <li class="flex items-start gap-1"><span>•</span>(*数年単位を推奨)</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-28">
+            <div class="text-center">
+                <span class="section-no">No.2</span>
+                <h2 class="text-2xl font-black mb-6 text-center">学習理論を活用した学習設計</h2>
+                <p class="text-xs text-slate-400 font-bold leading-relaxed mb-6">aaa<br>aaa</p>
+            </div>
+            
+            <div class="relative mb-2">
+                <div class="flex justify-between px-2 mb-4">
+                    <div class="w-[39%] text-center">
+                        <span class="text-[9px] font-black tracking-widest uppercase block mb-1" style="color: #CE4A22;">Listening</span>
+                        <div class="indicator-arrow w-full"></div>
+                    </div>
+                    <div class="w-[59%] text-center">
+                        <span class="text-[9px] font-black tracking-widest uppercase block mb-1" style="color: #CE4A22;">Speaking</span>
+                        <div class="indicator-arrow w-full"></div>
+                    </div>
+                </div>
+
+                <div class="flex items-start justify-between relative px-2">
+                    <div class="flex flex-col items-center w-1/5">
+                        <div class="step-icon-box"><i data-lucide="headphones" class="w-5 h-5"></i></div>
+                        <span class="text-[10px] font-black text-slate-400">STEP 1</span>
+                        <span class="text-sm font-black mt-1">音声知覚</span>
+                    </div>
+                    <div class="step-node-line active"></div>
+                    <div class="flex flex-col items-center w-1/5">
+                        <div class="step-icon-box"><i data-lucide="book-open" class="w-5 h-5"></i></div>
+                        <span class="text-[10px] font-black text-slate-400">STEP 2</span>
+                        <span class="text-sm font-black mt-1">意味理解</span>
+                    </div>
+                    <div class="step-node-line active"></div>
+                    <div class="flex flex-col items-center w-1/5">
+                        <div class="step-icon-box"><i data-lucide="lightbulb" class="w-5 h-5"></i></div>
+                        <span class="text-[10px] font-black text-slate-400">STEP 3</span>
+                        <span class="text-sm font-black mt-1">概念化</span>
+                    </div>
+                    <div class="step-node-line active"></div>
+                    <div class="flex flex-col items-center w-1/5">
+                        <div class="step-icon-box"><i data-lucide="file-text" class="w-5 h-5"></i></div>
+                        <span class="text-[10px] font-black text-slate-400">STEP 4</span>
+                        <span class="text-sm font-black mt-1">文章化</span>
+                    </div>
+                    <div class="step-node-line active"></div>
+                    <div class="flex flex-col items-center w-1/5">
+                        <div class="step-icon-box"><i data-lucide="mic-2" class="w-5 h-5"></i></div>
+                        <span class="text-[10px] font-black text-slate-400">STEP 5</span>
+                        <span class="text-sm font-black mt-1">音声化</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col items-center mt-2">
+                <div class="relative w-full text-center">
+                    <svg class="w-full max-w-sm h-6 -mb-1 mx-auto" viewBox="0 0 400 20">
+                        <path d="M200,20 L50,0" stroke="#e2e8f0" stroke-width="1.5" stroke-dasharray="4 2" fill="none" />
+                        <path d="M200,20 L125,0" stroke="#e2e8f0" stroke-width="1.5" stroke-dasharray="4 2" fill="none" />
+                        <path d="M200,20 L200,0" stroke="#e2e8f0" stroke-width="1.5" stroke-dasharray="4 2" fill="none" />
+                        <path d="M200,20 L275,0" stroke="#e2e8f0" stroke-width="1.5" stroke-dasharray="4 2" fill="none" />
+                        <path d="M200,20 L350,0" stroke="#e2e8f0" stroke-width="1.5" stroke-dasharray="4 2" fill="none" />
+                    </svg>
+                    <div class="flex flex-col items-center">
+                        <div class="step-icon-box" style="margin-bottom: 4px;"><i data-lucide="brain" class="w-5 h-5"></i></div>
+                        <h3 class="text-sm font-black text-slate-800 tracking-normal">知識データベース</h3>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-28">
+            <div class="text-center">
+                <span class="section-no">No.3</span>
+                <h2 class="text-2xl font-black mb-10 text-center">脳内状況とトレーニング内容</h2>
+                <p class="text-xs text-slate-400 font-bold leading-relaxed mb-8">aaa<br>aaa</p>
+            </div>
+            
+            <div class="space-y-4">
+                <div class="detail-card p-5">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="ml-4"><span class="text-[10px] font-black text-slate-400 block">STEP 1</span><span class="text-base font-black">音声知覚</span></div>
+                        <div class="flex flex-col items-end gap-1">
+                            <span class="skill-badge">Listening</span>
+                            <div class="flex items-center gap-1.5"><i data-lucide="antenna" class="w-3.5 h-3.5 text-slate-400"></i><p class="text-[10px] font-black text-slate-400 tracking-tight">音のキャッチ</p></div>
+                        </div>
+                    </div>
+                    <hr class="border-slate-100 my-3">
+                    <div class="space-y-3 ml-4">
+                        <div><span class="label-gray mb-1">脳内状況</span><p class="text-[11px] font-bold text-slate-600">音の消失や連結（リンキング）の認識。耳が正確に音を拾えているかに集中。</p></div>
+                        <div><span class="label-gray mb-1">トレーニング</span><p class="text-[11px] font-black text-slate-900">オーバーラッピング / シャドーイング</p></div>
+                    </div>
+                </div>
+                <div class="detail-card p-5">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="ml-4"><span class="text-[10px] font-black text-slate-400 block">STEP 2</span><span class="text-base font-black">意味理解</span></div>
+                        <div class="flex flex-col items-end gap-1">
+                            <span class="skill-badge">Listening</span>
+                            <div class="flex items-center gap-1.5"><i data-lucide="binary" class="w-3.5 h-3.5 text-slate-400"></i><p class="text-[10px] font-black text-slate-400 tracking-tight">脳内翻訳・照合</p></div>
+                        </div>
+                    </div>
+                    <hr class="border-slate-100 my-3">
+                    <div class="space-y-3 ml-4">
+                        <div><span class="label-gray mb-1">脳内状況</span><p class="text-[11px] font-bold text-slate-600">英語の語順のまま情報を処理。返り読みせずイメージで捉える段階。</p></div>
+                        <div><span class="label-gray mb-1">トレーニング</span><p class="text-[11px] font-black text-slate-900">チャンクリーディング / リーディング</p></div>
+                    </div>
+                </div>
+                <div class="detail-card p-5">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="ml-4"><span class="text-[10px] font-black text-slate-400 block">STEP 3</span><span class="text-base font-black">概念化</span></div>
+                        <div class="flex flex-col items-end gap-1">
+                            <span class="skill-badge">Speaking</span>
+                            <div class="flex items-center gap-1.5"><i data-lucide="target" class="w-3.5 h-3.5 text-slate-400"></i><p class="text-[10px] font-black text-slate-400 tracking-tight">戦略設計</p></div>
+                        </div>
+                    </div>
+                    <hr class="border-slate-100 my-3">
+                    <div class="space-y-3 ml-4">
+                        <div><span class="label-gray mb-1">脳内状況</span><p class="text-[11px] font-bold text-slate-600">メッセージの構造化。難解な日本語の「削ぎ落とし」。</p></div>
+                        <div><span class="label-gray mb-1">トレーニング</span><p class="text-[11px] font-black text-slate-900">英語アウトプットフォーム / トピックスピーチ</p></div>
+                    </div>
+                </div>
+                <div class="detail-card p-5">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="ml-4"><span class="text-[10px] font-black text-slate-400 block">STEP 4</span><span class="text-base font-black">文章化</span></div>
+                        <div class="flex flex-col items-end gap-1">
+                            <span class="skill-badge">Speaking</span>
+                            <div class="flex items-center gap-1.5"><i data-lucide="puzzle" class="w-3.5 h-3.5 text-slate-400"></i><p class="text-[10px] font-black text-slate-400 tracking-tight">言語構築</p></div>
+                        </div>
+                    </div>
+                    <hr class="border-slate-100 my-3">
+                    <div class="space-y-3 ml-4">
+                        <div><span class="label-gray mb-1">脳内状況</span><p class="text-[11px] font-bold text-slate-600">構文パズル（型への流し込み）。時制、冠詞、前置詞の精緻化。</p></div>
+                        <div><span class="label-gray mb-1">トレーニング</span><p class="text-[11px] font-black text-slate-900">チャンク英作文 / 瞬間英作文</p></div>
+                    </div>
+                </div>
+                <div class="detail-card p-5">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="ml-4"><span class="text-[10px] font-black text-slate-400 block">STEP 5</span><span class="text-base font-black">音声化</span></div>
+                        <div class="flex flex-col items-end gap-1">
+                            <span class="skill-badge">Speaking</span>
+                            <div class="flex items-center gap-1.5"><i data-lucide="truck" class="w-3.5 h-3.5 text-slate-400"></i><p class="text-[10px] font-black text-slate-400 tracking-tight">デリバリー</p></div>
+                        </div>
+                    </div>
+                    <hr class="border-slate-100 my-3">
+                    <div class="space-y-3 ml-4">
+                        <div><span class="label-gray mb-1">脳内状況</span><p class="text-[11px] font-bold text-slate-600">発声、滑らかさ（フルーエンシー）の追求。感情を乗せる表現力。</p></div>
+                        <div><span class="label-gray mb-1">トレーニング</span><p class="text-[11px] font-black text-slate-900">オンライン英会話 / 発音矯正</p></div>
+                    </div>
+                </div>
+
+                <div class="detail-card p-5">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="ml-4"><span class="text-[10px] font-black text-slate-400 block">STEP Basic</span><span class="text-base font-black">知識データベース</span></div>
+                        <div class="flex flex-col items-end gap-1">
+                            <span class="skill-badge">All</span>
+                            <div class="flex items-center gap-1.5"><i data-lucide="database" class="w-3.5 h-3.5 text-slate-400"></i><p class="text-[10px] font-black text-slate-400 tracking-tight">情報の倉庫</p></div>
+                        </div>
+                    </div>
+                    <hr class="border-slate-100 my-3">
+                    <div class="space-y-3 ml-4">
+                        <div><span class="label-gray mb-1">脳内状況</span><p class="text-[11px] font-bold text-slate-600">全てのSTEPを支える基礎知識</p></div>
+                        <div><span class="label-gray mb-1">トレーニング</span><p class="text-[11px] font-black text-slate-900">発音 / 単語 / 文法</p></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-20">
+            <div class="text-center">
+                <span class="section-no">No.4</span>
+                <h2 class="text-2xl font-black mb-10 text-center">スキル積み上げのロードマップ</h2>
+                <p class="text-xs text-slate-400 font-bold leading-relaxed mb-8">aaa<br>aaa</p>
+            </div>
+
+            <div class="intensity-legend" aria-label="色の凡例">
+                <div class="legend-pill"><span class="legend-dot high"></span><span>高強度</span></div>
+                <div class="legend-pill"><span class="legend-dot mid"></span><span>中強度</span></div>
+                <div class="legend-pill"><span class="legend-dot low"></span><span>低強度</span></div>
+            </div>
+            
+            <div class="max-w-md mx-auto space-y-4">
+               
+                <div class="relative bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm text-center">
+                    <div class="absolute top-4 right-4"><span class="skill-badge">序盤</span></div>
+                    <div class="flex items-center justify-center gap-2 mb-5">
+                        <i data-lucide="shield-check" class="w-5 h-5" style="color: #CE4A22;"></i>
+                        <h4 class="text-lg font-[900] text-slate-800">強固な基礎固め</h4>
+                    </div>
+                    <div class="space-y-2 text-left">
+                        <div class="intensity-bar intensity-high">発音・単語・文法</div>
+                        <div class="intensity-bar intensity-high">シャドーイング / フォーム改善</div>
+                        <div class="intensity-bar intensity-low">オンライン英会話</div>
+                    </div>
+                </div>
+
+                <div class="flex justify-center py-2"><i data-lucide="chevrons-down" class="big-arrow w-8 h-8"></i></div>
+
+                <div class="relative bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm text-center">
+                    <div class="absolute top-4 right-4"><span class="skill-badge">中盤</span></div>
+                    <div class="flex items-center justify-center gap-2 mb-5">
+                        <i data-lucide="sword" class="w-5 h-5" style="color: #CE4A22;"></i>
+                        <h4 class="text-lg font-[900] text-slate-800">武器の磨き込み</h4>
+                    </div>
+                    <div class="space-y-2 text-left">
+                        <div class="intensity-bar intensity-low">発音・単語・文法</div>
+                        <div class="intensity-bar intensity-high">英作文 / シャドーイング</div>
+                        <div class="intensity-bar intensity-mid">オンライン英会話</div>
+                    </div>
+                </div>
+
+                <div class="flex justify-center py-2"><i data-lucide="chevrons-down" class="big-arrow w-8 h-8"></i></div>
+
+                <div class="relative bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm text-center">
+                    <div class="absolute top-4 right-4"><span class="skill-badge">終盤</span></div>
+                    <div class="flex items-center justify-center gap-2 mb-5">
+                        <i data-lucide="rocket" class="w-5 h-5" style="color: #CE4A22;"></i>
+                        <h4 class="text-lg font-[900] text-slate-800">実践での活用</h4>
+                    </div>
+                    <div class="space-y-2 text-left">
+                        <div class="intensity-bar intensity-low">基礎トレーニング全般</div>
+                        <div class="intensity-bar intensity-mid">シャドーイング</div>
+                        <div class="intensity-bar intensity-high">実践アウトプット / トピックトーク</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="text-center py-12 border-t border-slate-100">
+            <p class="text-[9px] font-black text-slate-300 uppercase tracking-[0.3em]">© 2026 Kepty English Methodology</p>
+        </footer>
+    </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
+<script>
+function toggleSideMenu(isOpen){var m=document.getElementById('side-menu-content'),o=document.getElementById('side-menu-overlay'),t=document.querySelector('.menu-pill-trigger');if(isOpen){m.classList.add('open');o.classList.remove('hidden');if(t)t.classList.add('hidden');}else{m.classList.remove('open');o.classList.add('hidden');if(t)t.classList.remove('hidden');}}
+</script>
+</body>
+</html>
+
+
+
+
+
+

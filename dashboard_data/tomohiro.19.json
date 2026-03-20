@@ -1,0 +1,11 @@
+{
+  "planned": {
+    "dailyTargetMinutes": [60, 60, 60, 60, 60, 30, 30],
+    "weeklyTargetMinutes": 360
+  },
+  "storageMode": "json-plus-local",
+  "historyDayActivityMs": {
+    "2026-03-10": 2700000,
+    "2026-03-11": 1800000
+  }
+}
